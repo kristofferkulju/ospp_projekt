@@ -1,5 +1,4 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
@@ -7,8 +6,25 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Hello, World!</h1>
+        <div>
+      <h1>Welcome to my app</h1>
+      <MyButton />
+      <myText />
+    </div>
       </header>
     </div>
+  );
+}
+
+function MyButton() {
+  const [index, setIndex] = useState(0);
+  return (
+    <button onClick={() => {setIndex(index + 1);
+                            if (index === 20) {
+                              window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley", "_blank");
+                            }}}>
+      I'm a button, you've clicked me {index} times
+    </button>
   );
 }
 
