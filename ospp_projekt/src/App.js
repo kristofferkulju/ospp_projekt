@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './App.css';
+import { ServerMessages, WriteMessage } from './modules/Server.js'
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <myText />
     </div>
       </header>
+      <ServerMessages />
     </div>
   );
 }
