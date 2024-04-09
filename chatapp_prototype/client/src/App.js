@@ -23,7 +23,11 @@ function App() {
       {!showChat ? (
       <div className="joinChatContainer">
       <h3> Join A Chat</h3>
-      <input 
+      <input
+        onKeyDown={(event) => { 
+        if (event.key === "Enter") { 
+            joinRoom();} 
+        }}  
         type="text" 
         placeholder="John.." 
         onChange={(event) => 
@@ -37,6 +41,11 @@ function App() {
         onChange={(event) => 
           {setRoom(event.target.value)
         }}
+        onKeyDown={(event) => { 
+          if (event.key === "Enter") { 
+            joinRoom();} 
+          }} 
+        
       />
 
       <button onClick={joinRoom}> Join A Room</button>

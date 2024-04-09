@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 function Chat({socket, username, room}) {
     const [currentMessage, setCurrentMessage] = useState("");
-    const [messageList , setMessageList] = useState([]);
+    const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "ASL"}]);
 
     const sendMessage = async () => {
         if (currentMessage !== "") {
@@ -12,11 +12,12 @@ function Chat({socket, username, room}) {
                 room: room,
                 author: username,
                 message: currentMessage,
-
             };
         
+        setMessageList((list) => [...list, messageData]);
         await socket.emit("send_message", messageData);
         }
+        setCurrentMessage("");
     };
 
     useEffect(() => {
@@ -27,24 +28,33 @@ function Chat({socket, username, room}) {
     }, [socket]);
 
     return (
+        <div>
         <div className="chat-window"> 
             <div className= "chat-header"> 
                 <p>Live Chat</p>
             </div>
             <div className= "chat-body"> 
                 {messageList.map((messageContent) => {
-                    return <h1>{messageContent.message}</h1>
+                    return <p><b>{messageContent.author}</b> : {messageContent.message}</p>
                 })}
             </div>
-            <div className= "chat-footer ">
-                <input 
-                type="text" 
-                placeholder ="Hey.." 
-                onChange={(event) => {
-                    setCurrentMessage(event.target.value)
-                }}/>
-                <button onClick = {sendMessage}> &#9658;</button>
-                 </div>
+        </div>
+        
+        <div className= "chat-footer ">
+            <input 
+            onKeyDown={(event) => { 
+                if (event.key === "Enter") { 
+                    sendMessage();
+                } 
+            }} 
+            type="text" 
+            placeholder ="Hey.." 
+            value={currentMessage}
+            onChange={(event) => {
+                setCurrentMessage(event.target.value);
+            }}/>
+            <button onClick = {sendMessage}> &#9658;</button>
+        </div>
         </div>
     )
 }
