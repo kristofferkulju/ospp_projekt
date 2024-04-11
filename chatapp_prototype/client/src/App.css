@@ -53,6 +53,7 @@ body {
 .chat-window {
   width: 300px;
   height: 420px;
+  overflow: auto;
 }
 
 .chat-window p {
@@ -69,15 +70,15 @@ body {
   display: block;
   padding: 0 1em 0 2em;
   color: #fff;
-  font-weight: 700;
+  font-weight: 700px;
   line-height: 45px;
 }
 
 .chat-window .chat-body {
-  height: calc(450px - (45px + 70px));
+  height: 373px;
   border: 1px solid #263238;
   background: #fff;
-
+  width: 297px;
   position: relative;
 }
 .chat-window .chat-body .message-container {
