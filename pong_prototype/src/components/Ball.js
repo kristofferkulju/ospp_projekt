@@ -5,7 +5,7 @@ function Ball ({ left, top }) {
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: 'red',
+                backgroundColor: 'white',
                 position: 'absolute',
                 top: `${top}px`,
                 left: `${left}px`,
