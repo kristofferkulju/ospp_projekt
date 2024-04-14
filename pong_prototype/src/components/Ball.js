@@ -4,7 +4,7 @@ function Ball ({ left, top }) {
             style={{
                 width: '20px',
                 height: '20px',
-                borderRadius: '50%',
+                // borderRadius: '50%',
                 backgroundColor: 'white',
                 position: 'absolute',
                 top: `${top}px`,

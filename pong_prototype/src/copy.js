@@ -88,6 +88,7 @@ function App() {
   }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2]);
 
   useEffect(() => {
+    console.log("UseEffect triggered")
     socket.on("update_position", data => {
       if (data === "up") {
         setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
@@ -95,12 +96,12 @@ function App() {
         setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
       }
     });
-
+  
     return () => {
       socket.off("update_position");
     };
-  }, [socket]);
-
+  }, [setPaddlePositionP2]);
+  
   return (
     <>
       <h1>DROGELPING</h1>
