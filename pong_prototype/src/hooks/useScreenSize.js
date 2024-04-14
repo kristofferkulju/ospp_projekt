@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import react, { useState, useEffect} from 'react';
 
 function useScreenSize() {
     const [screenSize, setScreenSize] = useState({
@@ -18,7 +18,7 @@ function useScreenSize() {
 
         return () => {
             window.removeEventListener('resize', handleResize);
-        };
+        }
     }, [screenSize]);
     
     return screenSize;

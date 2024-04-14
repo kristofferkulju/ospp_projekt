@@ -1,68 +1,93 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
+import Ball from "./components/Ball";
+import Field from "./components/Field";
+import Paddle from "./components/Paddle";
+import useScreenSize from "./hooks/useScreenSize";
+import useKeyPress from "./hooks/useKeyPress";
 import './App.css';
-import useScreenSize from './hooks/useScreenSize';
-import useKeyPress from './hooks/useKeyPress';
-import Paddle from './components/Paddle';
-import Ball from './components/Ball';
 
 function App() {
   const screenSize = useScreenSize();
-  const [paddlePosition, setPaddlePosition] = useState({ top: 0, left: 10 });
-  const [ballPosition, setBallPosition] = useState({ top: 0, left: 0});
-  const [ballVelocity, setBallVelocity] = useState({ x: 1, y: 1});
-  const moveUp = useKeyPress(['w', 'ArrowUp']);
-  const moveDown = useKeyPress(['s', 'ArrowDown']);
+
+  const fieldWidth = 1000;
+  const fieldHeight = 500;
+  const paddleWidth = 20;
+  const paddleHeight = 100;
+  
+  const [paddlePositionP1, setPaddlePositionP1] = useState(fieldHeight / 2 - paddleHeight / 2);
+  const [paddlePositionP2, setPaddlePositionP2] = useState(fieldHeight / 2 - paddleHeight / 2);
+  const [ballPosition, setBallPosition] = useState({top: fieldHeight / 2, left: fieldWidth / 2 - 10 });
+  const [ballVelocity, setBallVelocity] = useState({x: 2, y: 2  });
+  
+  const moveUpP1 = useKeyPress(['w']);
+  const moveDownP1 = useKeyPress(['s']);
+  const moveUpP2 = useKeyPress(['ArrowUp']);
+  const moveDownP2 = useKeyPress(['ArrowDown']);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (moveUp) {
-        //Tar det största värdet av 0 och prevTop-3, vilket innebär att det aldrig kan bli negativt.
-          setPaddlePosition((prevPos) => ({
-            ...prevPos,
-            top: Math.max(0, prevPos.top - 3)
-          }));        
-      } else if (moveDown) {
-        setPaddlePosition((prevPos) => ({
-          ...prevPos,
-          top: Math.max(0, prevPos.top + 3)
-        })); 
+      if (moveUpP1) { 
+        setPaddlePositionP1((prevPos) => Math.max(0, (prevPos - 3))); 
+      } 
+      if (moveDownP1) {
+        setPaddlePositionP1((prevPos) => Math.min((fieldHeight - paddleHeight), (prevPos + 3)));
+      } 
+      if (moveUpP2) {
+        setPaddlePositionP2((prevPos) => Math.max(0, (prevPos - 3)));
+      } 
+      if (moveDownP2) {
+        setPaddlePositionP2((prevPos) => Math.min(fieldHeight - paddleHeight, (prevPos + 3)));
       }
-      
+
       setBallPosition((prevPos) => {
         const nextPosition = {
           top: prevPos.top + ballVelocity.y,
-          left: prevPos.left + ballVelocity.x
+          left: prevPos.left + ballVelocity.x,
         };
 
-        //Om bollen krockar med "taket" eller "golvet".
-        if (nextPosition.top <= 0 || nextPosition.top >= screenSize.height - 100) {
+        //Om bollen träffar taket eller golvet
+        if (nextPosition.top <= 0 || nextPosition.top + 20 >= fieldHeight) {
           const newBallVelocity = {x: ballVelocity.x, y: -ballVelocity.y};
           setBallVelocity(newBallVelocity);
         }
 
-        //Om bollen krockar med paddeln.
-        if (nextPosition.left <= paddlePosition.left + 40 && nextPosition.top >= paddlePosition.top && nextPosition.top <= paddlePosition.top + 100) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+        //Om bollen träffar sidan av paddeln
+        if (nextPosition.left <= 15 + paddleWidth && nextPosition.top >= paddlePositionP1 && nextPosition.top <= paddlePositionP1 + paddleHeight) {
+          const newBallVelocity = {x: -ballVelocity.x, y: ballVelocity.y};
           setBallVelocity(newBallVelocity);
         }
-        if (nextPosition.left <= 0 || nextPosition.left >= screenSize.width) {
-          setBallPosition({ top: screenSize.height / 2, left: screenSize.width / 2 });
-          setBallVelocity({ x: -ballVelocity.x, y: 1 });
+
+        if (nextPosition.left + 20 >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
+          const newBallVelocity = {x: -ballVelocity.x, y: ballVelocity.y};
+          setBallVelocity(newBallVelocity);
         }
-        return nextPosition ;
+
+        if (nextPosition.left <= 0 || nextPosition.left + 20 >= fieldWidth) {
+          const newBallPosition = {top: fieldHeight / 2, left: fieldWidth / 2 - 10};
+          setBallPosition(newBallPosition);  
+        }
+
+        return nextPosition;
+
       });
 
-    }, 4);
+    }, 5);
     return () => clearInterval(interval);
-  }, [moveUp, moveDown, paddlePosition, screenSize.width, screenSize.height, ballVelocity.y]);
+  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, screenSize, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
+  
 
-
-
+  
   return (
-    <div style={{ width: screenSize.width, height: screenSize.height }}>
-      <Paddle top = {paddlePosition.top} left = {paddlePosition.left} /> 
-      <Ball top = {ballPosition.top} left = {ballPosition.left} />
-    </div>
+    <>
+      <h1>DROGELPING</h1>
+      <div className="field"> 
+        <Field width={fieldWidth} height={fieldHeight}>
+          <Paddle width={paddleWidth} left={15} top={paddlePositionP1}></Paddle>
+          <Paddle width={paddleWidth} left={1000 - 15 - paddleWidth} top={paddlePositionP2}></Paddle>
+          <Ball top = {ballPosition.top} left = {ballPosition.left}> </Ball>
+        </Field>
+      </div>
+    </> 
   );
 }
 

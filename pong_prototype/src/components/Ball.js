@@ -1,4 +1,4 @@
-function Ball({ top, left }) {
+function Ball ({ left, top }) {
     return (
         <div
             style={{
@@ -12,6 +12,6 @@ function Ball({ top, left }) {
             }}
         />
     );
-};
+}
 
 export default Ball;
