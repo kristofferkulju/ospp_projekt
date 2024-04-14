@@ -26,8 +26,13 @@ io.on("connection", (socket) => {
        socket.to(data.room).emit("receive_message", data);
    });
 
+   socket.on("update_postion", (data) => {
+    socket.join(data);
+    socket.to("123").emit("update_position", data);
+    console.log("Updated position");
 });
 
+});
 
 server.listen(3001, () => {
    console.log("SERVER IS RUNNING")
