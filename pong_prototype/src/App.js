@@ -10,10 +10,17 @@ import io from 'socket.io-client';
 
 const socket = io.connect("http://localhost:3001");
 
+socket.on("connect", () => {
+  console.log("Connected to server");
+});
+socket.on("connect_error", (error) => {
+  console.error("Knas", error);
+});
+
 function App() {
 
-  const [username, setUsername] = useState("");
-  const [room, setRoom] = useState("123");
+  const [username, setUsername] = useState("Hej");
+  const [room, setRoom] = useState(123);
   const [showGame, setShowGame] = useState(false);
 
   const screenSize = useScreenSize();
@@ -25,10 +32,10 @@ function App() {
     }
   }
 
-  var upP1 = "w";
-  var downP1 = "s";
-  var upP2 = "ArrowUp";
-  var downP2 = "ArrowDown";
+  const upP1 = "w";
+  const downP1 = "s";
+  const upP2 = "ArrowUp";
+  const downP2 = "ArrowDown";
 
   const fieldWidth = 1000;
   const fieldHeight = 500;
@@ -45,25 +52,10 @@ function App() {
   const moveUpP2 = useKeyPress([upP2]);
   const moveDownP2 = useKeyPress([downP2]);
 
-
-  //  useEffect(() => {
-  //   const newSocket = io.connect(socket); // Connect to the server
-  //   setSocket(newSocket);
-
-  //   return () => {
-  //     newSocket.disconnect(); // Clean up the socket connection when component unmounts
-  //   };
-  // }, []); // Run only once when component mounts
   useEffect(() => {
-    
-    updateOtherPaddlePositions();
-  }, [socket])
-
-  useEffect(() => {
-
     const interval = setInterval(() => {
-      updateMyPaddlePositions();
-
+      updatePaddlePositions();
+      
       setBallPosition((prevPos) => {
         const nextPosition = {
           top: prevPos.top + ballVelocity.y,
@@ -96,37 +88,23 @@ function App() {
 
       });
 
-    }, 30);
+    }, 10);
     return () => clearInterval(interval);
   }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, screenSize, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
   
-  async function updateMyPaddlePositions() {
-    
+  function updatePaddlePositions() {
     if (moveUpP1) { 
       setPaddlePositionP1((prevPos) => Math.max(0, (prevPos - 3))); 
-      // Skicka till server
-      socket.emit("update_position", "up")
     }
     if (moveDownP1) {
       setPaddlePositionP1((prevPos) => Math.min((fieldHeight - paddleHeight), (prevPos + 3)));
-      // Skicka till server¨
-      console.log("Tjooo")
-      
-      
-      socket.emit("update_position", "down")
     }
-  }
-  
-  async function updateOtherPaddlePositions(interval) {
-    console.log("Hej");
-    socket.on("update_position", (data) => {
-    if (data === "up") {
+    if (moveUpP2) {
       setPaddlePositionP2((prevPos) => Math.max(0, (prevPos - 3)));
     }
-    else if (data === "down") {
+    if (moveDownP2) {
       setPaddlePositionP2((prevPos) => Math.min(fieldHeight - paddleHeight, (prevPos + 3)));
     }
-  });
   }
   
   return (
