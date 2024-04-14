@@ -1,18 +1,16 @@
-import React from "react";
-
-const Paddle = ({ top, left}) => {
+function Paddle({width, left, top }) {
     return (
         <div
         style = {{
-            width: '30px',
+            width: `${width}px`,
             height: '100px',
-            backgroundColor: 'blue',
+            backgroundColor: 'white',
             position: 'absolute',
             left: `${left}px`,
             top: `${top}px`,
         }}
         />
     );
-};
+}
 
 export default Paddle;
