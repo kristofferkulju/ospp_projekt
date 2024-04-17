@@ -5,8 +5,8 @@ import Paddle from "./components/Paddle";
 import useScreenSize from "./hooks/useScreenSize";
 import useKeyPress from "./hooks/useKeyPress";
 import './App.css';
-
 import io from 'socket.io-client';
+
 
 const socket = io.connect("http://localhost:3001");
 
@@ -19,7 +19,7 @@ socket.on("connect_error", (error) => {
 
 function App() {
 
-  const [username, setUsername] = useState("Hej");
+  const [username, setUsername] = useState("");
   const [room, setRoom] = useState(123);
   const [showGame, setShowGame] = useState(false);
 
@@ -32,10 +32,35 @@ function App() {
     }
   }
 
-  const upP1 = "w";
-  const downP1 = "s";
-  const upP2 = "ArrowUp";
-  const downP2 = "ArrowDown";
+  const [upP1, setUpP1] = useState("w");
+  const [downP1, setDownP1] = useState("s");
+  const [upP2, setUpP2] = useState("ArrowUp");
+  const [downP2, setDownP2] = useState("ArrowDown");
+
+  const moveUpP1 = useKeyPress([upP1]);
+  const moveDownP1 = useKeyPress([downP1]);
+  const moveUpP2 = useKeyPress([upP2]);
+  const moveDownP2 = useKeyPress([downP2]);
+
+
+  // Gör så att man endast kan röra sin egen paddel med w och s efter att man angett vilken spelare man är
+  // TODO: Gör att detta har att göra med vilken spelare man är
+  useEffect(() => {
+    if (username === "1") {
+    setUpP1("w");
+    setDownP1("s");
+    setUpP2("");
+    setDownP2("");
+    }
+
+    else if (username === "2") {
+      setUpP1("");
+      setDownP1("");
+      setUpP2("w");
+      setDownP2("s");
+    }
+
+    }, [username]);
 
   const fieldWidth = 1000;
   const fieldHeight = 500;
@@ -47,12 +72,12 @@ function App() {
   const [ballPosition, setBallPosition] = useState({ top: fieldHeight / 2, left: fieldWidth / 2 - 10 });
   const [ballVelocity, setBallVelocity] = useState({ x: 2, y: 2 });
 
-  const moveUpP1 = useKeyPress([upP1]);
-  const moveDownP1 = useKeyPress([downP1]);
-  const moveUpP2 = useKeyPress([upP2]);
-  const moveDownP2 = useKeyPress([downP2]);
+  const [state, setState] = useState(0);
 
   useEffect(() => {
+
+    setState(state + 1);
+
     const interval = setInterval(() => {
       if (moveUpP1) {
         setPaddlePositionP1(prevPos => Math.max(0, prevPos - 3));
@@ -75,6 +100,7 @@ function App() {
           left: prevPos.left + ballVelocity.x,
         };
 
+        //TODO: Namnge konstanter något vettigt
         //Om bollen träffar taket eller golvet
         if (nextPosition.top <= 0 || nextPosition.top + 20 >= fieldHeight) {
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
@@ -97,6 +123,11 @@ function App() {
           setBallPosition(newBallPosition);
         }
 
+        if (state % 100 === 0) {
+          socket.emit("sync_ball", [nextPosition, ballVelocity]);
+          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2]);
+        }
+
         return nextPosition;
 
       });
@@ -113,6 +144,18 @@ function App() {
       } else if (data === "down") {
         setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
       }
+    });
+
+    socket.on("sync_ball", (data) => { 
+      setBallPosition(data[0]);
+      setBallVelocity(data[1]);
+    });
+
+    socket.on("sync_paddle", (data) => {
+      if (data[0] === "1") {
+        setPaddlePositionP2(data[2]);
+      }
+
     });
 
     return () => {

@@ -37,6 +37,16 @@ io.on("connection", (socket) => {
         socket.to("123").emit("update_position", data);
 
     });
+
+    socket.on("sync_ball", (data) => {
+        console.log("Synced ball");
+        socket.to("123").emit("sync_ball", data);
+    });
+
+    socket.on("sync_paddle", (data) => {
+        console.log("Synced paddle");
+        socket.to("123").emit("sync_paddle", data);
+    });
 });
 
 server.listen(3001, () => {
