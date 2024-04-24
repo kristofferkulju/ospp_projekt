@@ -5,6 +5,10 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 app.use(cors());
 
+app.get("/", (req, res) => {
+    res.send("Hello from the server!");
+});
+
 const server = http.createServer(app);
 
 const io = new Server(server, { 
@@ -24,6 +28,34 @@ io.on("connection", (socket) => {
 
    socket.on("send_message", (data) => {
        socket.to(data.room).emit("receive_message", data);
+   });
+
+   //Spelserver
+
+   socket.on("join_room", (data) => {
+       socket.join(data);
+       console.log(`User with id: ${socket.id} Joined room: ${data}`);
+   });
+
+   socket.on("send_message", (data) => {
+       socket.emit("receive_message", data);
+   });
+
+   socket.on("update_position", (data) => {
+       console.log("Updated position");
+       socket.join("123");
+       socket.to("123").emit("update_position", data);
+
+   });
+
+   socket.on("sync_ball", (data) => {
+       console.log("Synced ball");
+       socket.to("123").emit("sync_ball", data);
+   });
+
+   socket.on("sync_paddle", (data) => {
+       console.log("Synced paddle");
+       socket.to("123").emit("sync_paddle", data);
    });
 
 });

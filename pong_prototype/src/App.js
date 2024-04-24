@@ -84,8 +84,13 @@ function App() {
         socket.emit("update_position", "up");
       }
       if (moveDownP1) {
-        setPaddlePositionP1(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
-        socket.emit("update_position", "down");
+        if (paddlePositionP1 === 0) {
+          setPaddlePositionP1(prevPos => prevPos);
+        }
+        else {
+          setPaddlePositionP1(prevPos => prevPos + 3)
+          socket.emit("update_position", "down");
+        }
       }
       if (moveUpP2) {
         setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));

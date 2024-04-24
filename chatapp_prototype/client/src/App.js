@@ -3,6 +3,7 @@ import './App.css';
 import io from 'socket.io-client';
 import { useState } from "react";
 import Chat from './Chat';
+import {Pong_app} from '../../../pong_prototype/src';
 
 const socket = io.connect("http://localhost:3001");
 
@@ -55,6 +56,7 @@ function App() {
     : (
       <Chat socket ={socket} username = {username} room = {room}/>
     )}
+    <Pong_app></Pong_app>
     </div>
   );
 }

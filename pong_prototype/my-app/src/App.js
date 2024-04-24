@@ -6,7 +6,7 @@ import useScreenSize from "./hooks/useScreenSize";
 import useKeyPress from "./hooks/useKeyPress";
 import './App.css';
 
-function App() {
+function App_pong() {
   const screenSize = useScreenSize();
 
   const fieldWidth = 1000;
@@ -91,4 +91,4 @@ function App() {
   );
 }
 
-export default App;
+export default App_pong;
