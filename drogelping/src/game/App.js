@@ -84,13 +84,17 @@ function App() {
         socket.emit("update_position", "up");
       }
       if (moveDownP1) {
-        if (paddlePositionP1 === 0) {
+        setPaddlePositionP1(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
+        socket.emit("update_position", "down");
+        /*
+        if (paddlePositionP1 === 0) { // FIXME: Paddle gets stuck when on top of screen
           setPaddlePositionP1(prevPos => prevPos);
         }
-        else {
+        else { // FIXME: Paddle goes past bounding box (down)
           setPaddlePositionP1(prevPos => prevPos + 3)
           socket.emit("update_position", "down");
         }
+        */
       }
       if (moveUpP2) {
         setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
