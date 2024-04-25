@@ -15,4 +15,4 @@ In the project directory, you can run:
 
 ### `npm run chatserver`
 - Runs the **chat server**
-- Ope [http://localhost:2001](http://localhost:2001) to view it in your browser
+- Open [http://localhost:2001](http://localhost:2001) to view it in your browser.
