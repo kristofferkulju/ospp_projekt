@@ -19,9 +19,5 @@
   "bugs": {
     "url": "https://github.com/kristofferkulju/ospp_projekt/issues"
   },
-  "homepage": "https://github.com/kristofferkulju/ospp_projekt#readme",
-  "dependencies": {
-    "socket.io": "^4.7.5",
-    "express": "^4.19.2"
-  }
+  "homepage": "https://github.com/kristofferkulju/ospp_projekt#readme"
 }
