@@ -172,21 +172,6 @@ function App() {
     };
   }, [socket]);
 
-  // function updatePaddlePositions() {
-  //   if (moveUpP1) { 
-  //     setPaddlePositionP1((prevPos) => Math.max(0, (prevPos - 3))); 
-  //   }
-  //   if (moveDownP1) {
-  //     setPaddlePositionP1((prevPos) => Math.min((fieldHeight - paddleHeight), (prevPos + 3)));
-  //   }
-  //   if (moveUpP2) {
-  //     setPaddlePositionP2((prevPos) => Math.max(0, (prevPos - 3)));
-  //   }
-  //   if (moveDownP2) {
-  //     setPaddlePositionP2((prevPos) => Math.min(fieldHeight - paddleHeight, (prevPos + 3)));
-  //   }
-  // }
-
   return (
     <>
       <h1>DROGELPING</h1>
