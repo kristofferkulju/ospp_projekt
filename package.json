@@ -1,0 +1,25 @@
+{
+  "name": "ospp_projekt",
+  "version": "1.0.0",
+  "description": "DrogelPing projekt, OSPP 2024",
+  "scripts": {
+    "clean": "cd drogelping && del *package-lock.json && rmdir /s /q node_modules",
+    "install": "cd drogelping && npm install",
+    "start": "cd drogelping && npm start",
+    "chatserver": "node drogelping/src/chat/server/index.js",
+    "gameserver": "node drogelping/src/game/server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kristofferkulju/ospp_projekt.git"
+  },
+  "contributors": [
+    "Emil Edin", "Markus Eriksson", "Almir Fejzic", 
+    "Kristoffer Kulju", "Isidor Löwbäck", "Alicia Sjöstrand", 
+    "Jakob Strandman", "Oscar Wångmar"
+  ],
+  "bugs": {
+    "url": "https://github.com/kristofferkulju/ospp_projekt/issues"
+  },
+  "homepage": "https://github.com/kristofferkulju/ospp_projekt#readme"
+}

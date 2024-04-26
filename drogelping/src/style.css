@@ -1,0 +1,130 @@
+:root {
+    --background: #5e5e5e;
+    --window: #343434;
+    --text: #ffffff;
+    --active-tab: #383bff;
+    --active-tab-text: #ffffff;
+    --toggled: #00a908;
+    --untoggled: #636363;
+    }
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+}   
+.container {
+    display: grid;
+    max-width: 600px;
+    margin: 15px auto;
+    padding: 20px;
+    background-color: var(--window);
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px 8px 0 0;
+}
+.tab.active {
+    background-color: var(--active-tab);
+    color: var(--active-tab-text);
+}
+.content {
+    display: none;
+}
+.content.active {
+    display: block;
+}
+.input-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+.input-container input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.button {
+    width: 100%;
+    padding: 10px 2px;
+    border: none;
+    margin-top: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    color: var(--text);
+}
+.button.green {
+    background-color: #28a745;
+    color: #ffffff;
+    border-radius: 25px;
+}
+.button.cyan {
+    background-color: #17a2b8;
+    color: #ffffff;
+    clip-path: polygon(2% 0, 98% 0, 100% 50%, 98% 100%, 2% 100%, 0 50%);
+}
+.button.purple {
+    background-color: #7442bf;
+    color: #ffffff;
+}
+.button.light-grey {
+    background-color: #454545;
+    color: #ffffff;
+}
+.button.red {
+    background-color: red;
+    color: #ffffff;
+}
+
+input[type="number"]
+{
+    width: 80px;
+    height: 30px;
+    font-size: medium;
+    background-color: var(--window);
+    color: var(--text);
+}
+.toggleLabel {
+    display: inline-block;
+    width: 40px; /* Adjust width as needed */
+    height: 20px; /* Adjust height as needed */
+    background-color: var(--untoggled); /* Toggle background color */
+    border-radius: 20px; /* Rounded corners */
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 4px;
+}
+.toggleLabel:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    transition: 0.1s;
+}
+input[type="checkbox"] {
+    display: none; /* Hide the checkbox */
+}
+input[type="checkbox"]:checked + .toggleLabel {
+    background-color: var(--toggled); /* Change background color when checked */
+}
+input[type="checkbox"]:checked + .toggleLabel:after {
+    transform: translateX(25px); /* Move toggle button to the right */
+}
+.settingsText {
+    font-size: 13px;
+}
