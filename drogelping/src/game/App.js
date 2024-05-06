@@ -17,7 +17,7 @@ socket.on("connect_error", (error) => {
   console.error("Knas", error);
 });
 
-function App() {
+function App_game() {
 
   const [username, setUsername] = useState("");
   const [room, setRoom] = useState(123);
@@ -132,17 +132,21 @@ function App() {
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
+            socket.emit("update_score", [scoreP2, scoreP1]);
+            socket.emit("GOAL", {room: 123, author: "Server", message: "goal",});
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
+            socket.emit("update_score", [scoreP2, scoreP1]);
+            socket.emit("GOAL");
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
 
-        if (state % 100 === 0) {
+        if (state % 500 === 0) {
           socket.emit("sync_ball", [nextPosition, ballVelocity]);
           socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2]);
         }
@@ -177,6 +181,12 @@ function App() {
 
     });
 
+    socket.on("update_score", (data) => {
+      setScoreP1(data[0]);
+      setScoreP2(data[1]);
+    })
+
+
     return () => {
       socket.off("update_position");
     };
@@ -208,4 +218,4 @@ function App() {
   );
 }
 
-export default App;
+export default App_game;

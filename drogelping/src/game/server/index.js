@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
 
-    console.log(`User connected: ${socket.id}`);
+    console.log(`Game server User connected: ${socket.id}`);
 
     socket.on("join_room", (data) => {
         socket.join(data);
@@ -30,23 +30,31 @@ io.on("connection", (socket) => {
     });
 
     socket.on("update_position", (data) => {
-        //console.log("Updated position");
+        console.log("Updated position");
         socket.join("123");
         socket.to("123").emit("update_position", data);
 
     });
 
     socket.on("sync_ball", (data) => {
-        //console.log("Synced ball");
+        console.log("Synced ball");
         socket.to("123").emit("sync_ball", data);
     });
 
     socket.on("sync_paddle", (data) => {
-        //console.log("Synced paddle");
+        console.log("Synced paddle");
         socket.to("123").emit("sync_paddle", data);
     });
+
+    socket.on("update_score", (data) => {
+        console.log("Goal gg wp");
+        socket.to("123").emit("sync_score", data);
+    })
+
+    socket.on("GOAL", () => {socket.emit("receive_message", (data) => data);
+    console.log("voff");
 });
 
-server.listen(1001, () => {
-    console.log("SERVER IS RUNNING")
+server.listen(2001, () => {
+    console.log("Game SERVER IS RUNNING")
 });

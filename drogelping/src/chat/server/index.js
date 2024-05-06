@@ -19,7 +19,7 @@ const io = new Server(server, {
    });
 
 io.on("connection", (socket) => {
-   console.log(`User connected: ${socket.id}`);
+   console.log(`Chat server User connected: ${socket.id}`);
 
    socket.on("join_room", (data) => {
        socket.join(data);
@@ -51,8 +51,6 @@ io.on("connection", (socket) => {
 
 });
 
-
-
 server.listen(2001, () => {
-   console.log("SERVER IS RUNNING")
+   console.log("Chat SERVER IS RUNNING")
 });

@@ -51,22 +51,28 @@ body {
 }
 
 .chat-window {
-  width: 300px;
-  height: 420px;
+  width: 316px;
+  height: 250px;
   overflow: auto;
+  border: 1px solid #263238;
+  border-radius: 6px;
+  display: flex;
+  grid-column-start: 1;
+  grid-column-end: 2;
 }
 
 .chat-window p {
   margin: 0;
 }
-.chat-window .chat-header {
+
+.chat-header {
   height: 45px;
   border-radius: 6px;
   background: #263238;
-  position: relative;
+  position: sticky;
   cursor: pointer;
 }
-.chat-window .chat-header p {
+.chat-header p {
   display: block;
   padding: 0 1em 0 2em;
   color: #fff;
@@ -75,8 +81,8 @@ body {
 }
 
 .chat-window .chat-body {
-  height: 373px;
-  border: 1px solid #263238;
+  height: auto;
+  
   background: #fff;
   width: 297px;
   position: relative;
