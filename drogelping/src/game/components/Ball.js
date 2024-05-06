@@ -1,11 +1,11 @@
-function Ball ({ left, top }) {
+function Ball ({ ballSize, left, top }) {
     return (
         <div
             style={{
-                width: '20px',
-                height: '20px',
-                // borderRadius: '50%',
-                backgroundColor: 'white',
+                width: `${ballSize}px`,
+                height: `${ballSize}px`,
+                borderRadius: '50%',
+                backgroundColor: 'rgb(255,224,103)',
                 position: 'absolute',
                 top: `${top}px`,
                 left: `${left}px`,

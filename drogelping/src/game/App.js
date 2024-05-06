@@ -23,7 +23,7 @@ function App() {
   const [room, setRoom] = useState(123);
   const [showGame, setShowGame] = useState(false);
 
-  const screenSize = useScreenSize();
+  const ballSize = 24;
 
   const joinRoom = () => {
     if (username && room) {
@@ -36,6 +36,8 @@ function App() {
   const [downP1, setDownP1] = useState("s");
   const [upP2, setUpP2] = useState("ArrowUp");
   const [downP2, setDownP2] = useState("ArrowDown");
+  const [scoreP1, setScoreP1] = useState(0);
+  const [scoreP2, setScoreP2] = useState(0);
 
   const moveUpP1 = useKeyPress([upP1]);
   const moveDownP1 = useKeyPress([downP1]);
@@ -47,10 +49,10 @@ function App() {
   // TODO: Gör att detta har att göra med vilken spelare man är
   useEffect(() => {
     if (username === "1") {
-    setUpP1("w");
-    setDownP1("s");
-    setUpP2("");
-    setDownP2("");
+      setUpP1("w");
+      setDownP1("s");
+      setUpP2("");
+      setDownP2("");
     }
 
     else if (username === "2") {
@@ -111,7 +113,7 @@ function App() {
 
         //TODO: Namnge konstanter något vettigt
         //Om bollen träffar taket eller golvet
-        if (nextPosition.top <= 0 || nextPosition.top + 20 >= fieldHeight) {
+        if (nextPosition.top <= 0 || nextPosition.top + ballSize >= fieldHeight) {
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
           setBallVelocity(newBallVelocity);
         }
@@ -122,13 +124,21 @@ function App() {
           setBallVelocity(newBallVelocity);
         }
 
-        if (nextPosition.left + 20 >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
+        if (nextPosition.left + ballSize >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
           const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
           setBallVelocity(newBallVelocity);
         }
 
-        if (nextPosition.left <= 0 || nextPosition.left + 20 >= fieldWidth) {
-          const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - 10 };
+        if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
+          if (nextPosition.left <= 0) {
+            setScoreP2(scoreP2 + 1);
+          }
+          
+          if (nextPosition.left + ballSize >= fieldWidth) {
+            setScoreP1(scoreP1 + 1);
+          }
+
+          const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
 
@@ -143,7 +153,7 @@ function App() {
 
     }, 10);
     return () => clearInterval(interval);
-  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, screenSize, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
+  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
 
   useEffect(() => {
     console.log("Use effect triggered.");
@@ -188,10 +198,10 @@ function App() {
       ></input>
 
       <div className="field">
-        <Field width={fieldWidth} height={fieldHeight}>
+        <Field width={fieldWidth} height={fieldHeight} scoreP1 = {scoreP1} scoreP2 = {scoreP2}>
           <Paddle width={paddleWidth} left={15} top={paddlePositionP1}></Paddle>
-          <Paddle width={paddleWidth} left={1000 - 15 - paddleWidth} top={paddlePositionP2}></Paddle>
-          <Ball top={ballPosition.top} left={ballPosition.left}> </Ball>
+          <Paddle width={paddleWidth} left={fieldWidth - 15 - paddleWidth} top={paddlePositionP2}></Paddle>
+          <Ball top={ballPosition.top} left={ballPosition.left} ballSize={ballSize}> </Ball>
         </Field>
       </div>
     </>

@@ -10,15 +10,14 @@ html, body {
 }
 
 h1 {
-  border: 5px black solid;
+  text-align: center;
 }
 
 .field {
   position: relative;
   width: 1000;
-  height: 800;
+  height: 500;
   display: flex;
   justify-Content: center;
   align-Items: center;
-  border: 5px green solid;
 }
