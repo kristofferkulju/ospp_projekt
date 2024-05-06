@@ -10,7 +10,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--background);
+    background-color: rgb(143,198,166);
     color: var(--text);
 }   
 .container {
