@@ -49,12 +49,14 @@ io.on("connection", (socket) => {
     socket.on("update_score", (data) => {
         console.log("Goal gg wp");
         socket.to("123").emit("sync_score", data);
-    })
+    });
 
-    socket.on("GOAL", () => {socket.emit("receive_message", (data) => data);
-    console.log("voff");
+    socket.on("GOAL", () => {
+        socket.emit("receive_message", (data) => data);
+        console.log("voff");
+    });
 });
 
-server.listen(2001, () => {
+server.listen(1001, () => {
     console.log("Game SERVER IS RUNNING")
 });
