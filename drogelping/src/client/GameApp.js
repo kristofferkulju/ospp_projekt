@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import Ball from "./components/Ball";
-import Field from "./components/Field";
-import Paddle from "./components/Paddle"
-import useScreenSize from "./hooks/useScreenSize";
-import useKeyPress from "./hooks/useKeyPress";
-import './App.css';
+import Ball from "../game/components/Ball";
+import Field from "../game/components/Field";
+import Paddle from "../game/components/Paddle"
+import useScreenSize from "../game/hooks/useScreenSize";
+import useKeyPress from "../game/hooks/useKeyPress";
+import './GameApp.css';
 import io from 'socket.io-client';
 
 
-const socket = io.connect("http://localhost:1001");
+const socket = io.connect("http://localhost:2001");
 
 socket.on("connect", () => {
   console.log("Connected to server");
@@ -133,13 +133,13 @@ function App_game() {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("GOAL", {room: 123, author: "Server", message: "goal",});
+            socket.emit("send_message", {room: 123, author: "Server", message: "goal"});
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("GOAL");
+            socket.emit("send_message", {room: 123, author: "Server", message: "goal",});
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
@@ -185,7 +185,6 @@ function App_game() {
       setScoreP1(data[0]);
       setScoreP2(data[1]);
     })
-
 
     return () => {
       socket.off("update_position");

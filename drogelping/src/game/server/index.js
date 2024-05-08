@@ -5,7 +5,9 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 app.use(cors());
 
-
+app.get("/", (req, res) => {
+    res.send("Hello from the server!");
+});
 
 const server = http.createServer(app);
 
@@ -26,7 +28,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send_message", (data) => {
-        socket.emit("receive_message", data);
+        socket.to(data.room).emit("receive_message", data);
+        console.log(`This is the message: ${data.message} With room: ${data.room}`);
     });
 
     socket.on("update_position", (data) => {
@@ -51,12 +54,12 @@ io.on("connection", (socket) => {
         socket.to("123").emit("sync_score", data);
     });
 
-    socket.on("GOAL", () => {
-        socket.emit("receive_message", (data) => data);
-        console.log("voff");
+    socket.on("GOAL", (data) => {
+        socket.to(data.room).emit("receive_message", data);
+        console.log(`This is the message: ${data.message} With room: ${data.room}`);
     });
 });
 
-server.listen(1001, () => {
-    console.log("Game SERVER IS RUNNING")
+server.listen(2001, () => {
+    console.log("SERVER IS RUNNING")
 });

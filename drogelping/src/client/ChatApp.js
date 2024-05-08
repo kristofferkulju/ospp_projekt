@@ -1,9 +1,9 @@
 
-import './App.css';
+import './ChatApp.css';
 import io from 'socket.io-client';
 import { useState } from "react";
 import Chat from './Chat';
-import App_game from '../../game/App';
+import App_game from './GameApp';
 
 const socket = io.connect("http://localhost:2001");
 

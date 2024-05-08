@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import StartScreen from './StartScreen';
-import GameApp from './game/App';
-import ChatApp from './chat/client/App';
+import GameApp from './client/GameApp';
+import ChatApp from './client/ChatApp';
 //import Spectate from "..."
 //import Create from "..."
 //import Join from "..."

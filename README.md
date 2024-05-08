@@ -24,11 +24,6 @@ In the project directory, you can run:
 - Any lint errors present will be shown in the console.
 
 
-### `npm run gameserver`
-- Runs the **game server**
-- [http://localhost:1001](http://localhost:1001).
-
-
-### `npm run chatserver`
-- Runs the **chat server**
+### `npm run server`
+- Runs the **server**
 - [http://localhost:2001](http://localhost:2001).

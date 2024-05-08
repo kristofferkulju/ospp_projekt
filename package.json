@@ -6,8 +6,7 @@
     "clean": "cd drogelping && del *package-lock.json && rmdir /s /q node_modules",
     "install": "cd drogelping && npm install",
     "start": "cd drogelping && npm start",
-    "chatserver": "node drogelping/src/chat/server/index.js",
-    "gameserver": "node drogelping/src/game/server/index.js"
+    "server": "node drogelping/src/game/server/index.js"
   },
   "repository": {
     "type": "git",
