@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState } from "react";
 import { useEffect } from "react";
 
 function Chat({socket, username, room}) {
     const [currentMessage, setCurrentMessage] = useState("");
     const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "ASL"}]);
+    const chatBodyRef = useRef(null);
 
     const sendMessage = async () => {
         if (currentMessage !== "") {
@@ -13,9 +14,8 @@ function Chat({socket, username, room}) {
                 author: username,
                 message: currentMessage,
             };
-        
-        setMessageList((list) => [...list, messageData]);
-        await socket.emit("send_message", messageData);
+            setMessageList((list) => [...list, messageData]);
+            await socket.emit("send_message", messageData);
         }
         setCurrentMessage("");
     };
@@ -26,13 +26,19 @@ function Chat({socket, username, room}) {
         });
         return () => socket.off("receive_message");
     }, [socket]);
+    
+    useEffect(() => {
+        if (chatBodyRef.current) {
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        }
+    }, [messageList]);
 
     return (
         <div>
         <div className= "chat-header"> 
             <p>Live Chat</p>
         </div>
-        <div className="chat-window"> 
+        <div className="chat-window" ref={chatBodyRef}> 
             <div className= "chat-body"> 
                 {messageList.map((messageContent) => {
                     return <p><b>{messageContent.author}</b> : {messageContent.message}</p>
