@@ -1,6 +1,4 @@
-import React, { useRef } from 'react';
-import { useState } from "react";
-import { useEffect } from "react";
+import React, { useRef, useEffect, useState } from 'react';
 
 function Chat({socket, username, room}) {
     const [currentMessage, setCurrentMessage] = useState("");

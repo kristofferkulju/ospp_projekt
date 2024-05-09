@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import Ball from "../game/components/Ball";
 import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
-import useScreenSize from "../game/hooks/useScreenSize";
 import useKeyPress from "../game/hooks/useKeyPress";
 import './GameApp.css';
-//import { io } from "socket.io-client";
-//const socket = io.connect("http://localhost:2001");
-import socket from './socket';
+import { io } from "socket.io-client";
+const socket = io.connect("http://localhost:2001");
 
 //function GameApp({ socket, room }) {
 function GameApp({ room }) {
@@ -135,7 +133,7 @@ function GameApp({ room }) {
 
       });
 
-    }, 10);
+    }, 5);
     return () => clearInterval(interval);
   }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
 
@@ -158,20 +156,12 @@ function GameApp({ room }) {
       if (data[0] === "1") {
         setPaddlePositionP2(data[2]);
       }
-
     });
 
     socket.on("update_score", (data) => {
       setScoreP1(data[0]);
       setScoreP2(data[1]);
     })
-
-    return () => {
-        socket.off("update_position");
-        socket.off("sync_ball");
-        socket.off("sync_paddle");
-        socket.off("update_score");
-    };
   }, [socket]);
 
   return (

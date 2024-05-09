@@ -23,8 +23,9 @@ io.on("connection", (socket) => {
     console.log(`[CONNECTION_ESTABLISHED](${socket.id})`); // SocketChat, SocketGame
 
     socket.on("join_room", (data) => { // SocketChat
-        socket.join(data);
-        console.log(`[JOIN_ROOM](${socket.id}): (${data})`);
+        socket.join(data.room);
+        socket.emit("receive_message", data);
+        console.log(`[JOIN_ROOM](${socket.id}): (${data.author})`);
     });
 
     socket.on("send_message", (data) => { // SocketChat (messages), SocketGame (goals)
