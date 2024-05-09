@@ -128,13 +128,13 @@ function App_game() {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "goal"});
+            socket.emit("send_message", {room: 123, author: "Server", message: "P2_GOAL"});
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "goal",});
+            socket.emit("send_message", {room: 123, author: "Server", message: "P1_GOAL",});
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
