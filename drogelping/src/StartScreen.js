@@ -76,17 +76,12 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onChatClick, 
     };
     if (name && lobbyID) { // check if lobby exists too?
         onCreateClick(lobbyProperties);
-        onJoinClick(name, lobbyID); // Join directly after creating room?
+        //onJoinClick(name, lobbyID); // Join directly after creating room?
     }
     else {
         setErrorMessage('Please input a valid name and Lobby ID');
     }
   };
-
-  // Temporary functions, TODO: remove upon release
-  const start_game = () => { onGameClick(); }
-  const start_chat = () => { onChatClick(); }
-  // ----------------------------------------
 
   return (
     <div className="container">
@@ -129,9 +124,6 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onChatClick, 
                 />
             </div>
             <button className="button light-grey" onClick={() => toggleTab('create')}>Back</button>
-            {/* Temporary Buttons, TODO: remove upon release */}
-            <button className="button red" onClick={start_chat}>_Chat_</button>
-            <button className="button red" onClick={start_game}>_Pong_</button>
             {/* -------------------------------------- */}
         </div> 
     </div>

@@ -5,33 +5,15 @@ import Paddle from "../game/components/Paddle"
 import useScreenSize from "../game/hooks/useScreenSize";
 import useKeyPress from "../game/hooks/useKeyPress";
 import './GameApp.css';
-import io from 'socket.io-client';
 
-
+import { io } from "socket.io-client";
 const socket = io.connect("http://localhost:2001");
 
-socket.on("connect", () => {
-  console.log("Connected to server");
-});
-socket.on("connect_error", (error) => {
-  console.error("Knas", error);
-});
-
-function App_game() {
+//function GameApp({ room, socket }) {
+function GameApp({ room }) {
 
   const [username, setUsername] = useState("");
-  const [room, setRoom] = useState(123);
-  const [showGame, setShowGame] = useState(false);
-
   const ballSize = 24;
-
-  const joinRoom = () => {
-    if (username && room) {
-      socket.emit("join_room", room);
-      setShowGame(true);
-    }
-  }
-
   const [upP1, setUpP1] = useState("w");
   const [downP1, setDownP1] = useState("s");
   const [upP2, setUpP2] = useState("ArrowUp");
@@ -128,13 +110,13 @@ function App_game() {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "P2_GOAL"});
+            socket.emit("send_message", {room: room, author: "Server", message: "P2_GOAL"});
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "P1_GOAL",});
+            socket.emit("send_message", {room: room, author: "Server", message: "P1_GOAL",});
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
@@ -182,7 +164,10 @@ function App_game() {
     })
 
     return () => {
-      socket.off("update_position");
+        socket.off("update_position");
+        socket.off("sync_ball");
+        socket.off("sync_paddle");
+        socket.off("update_score");
     };
   }, [socket]);
 
@@ -196,7 +181,7 @@ function App_game() {
         onChange={(event) => setUsername(event.target.value)}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
-            joinRoom();
+
           }
         }}
       ></input>
@@ -212,4 +197,4 @@ function App_game() {
   );
 }
 
-export default App_game;
+export default GameApp;
