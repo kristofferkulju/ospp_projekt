@@ -73,7 +73,9 @@ function App_game({room}) {
   const [paddlePositionP1, setPaddlePositionP1] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [paddlePositionP2, setPaddlePositionP2] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [ballPosition, setBallPosition] = useState({ top: fieldHeight / 2, left: fieldWidth / 2 - 10 });
-  const [ballVelocity, setBallVelocity] = useState({ x: 2, y: 2 });
+  const [ballVelocity, setBallVelocity] = useState({ x: 3, y: 3 });
+  const startingVelocity = {x: 3, y: 3};
+  const velocitySum = startingVelocity.x + startingVelocity.y;
 
   const [state, setState] = useState(0);
 
@@ -115,25 +117,37 @@ function App_game({room}) {
 
         //TODO: Namnge konstanter något vettigt
         //Om bollen träffar taket eller golvet
-        if (nextPosition.top <= 0 || nextPosition.top + ballSize >= fieldHeight) {
+        if (nextPosition.top <= 0) {
+          const displacedPosition = { top: prevPos.top + 1, left: prevPos.left };
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
+          setBallPosition(displacedPosition);
+          setBallVelocity(newBallVelocity);
+        }
+        else if (nextPosition.top + ballSize >= fieldHeight) {
+          const displacedPosition = { top: prevPos.top - 1, left: prevPos.left };
+          const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
+          setBallPosition(displacedPosition);
           setBallVelocity(newBallVelocity);
         }
 
         //Om bollen träffar sidan av paddeln
         if (nextPosition.left <= 15 + paddleWidth && nextPosition.top >= paddlePositionP1 && nextPosition.top <= paddlePositionP1 + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+          const velocity = Math.random() * velocitySum;
+          const newBallVelocity = { x: velocity, y: velocitySum - velocity };
           setBallVelocity(newBallVelocity);
         }
 
         if (nextPosition.left + ballSize >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+          const velocity = Math.random() * velocitySum;
+          const newBallVelocity = { x: -velocity, y: velocitySum - velocity };
           setBallVelocity(newBallVelocity);
         }
 
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) {
+            const p2Velocity = {x :-velocitySum, y: 0};
             setScoreP2(scoreP2 + 1);
+            setBallVelocity(p2Velocity);
             socket.emit("update_score", [scoreP2, scoreP1]);
             if (!goalScoredRef.current) {
               socket.emit("send_message", {room: room, author: "Server", message: "Goal!"});
@@ -142,7 +156,9 @@ function App_game({room}) {
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
+            const p2Velocity = {x :velocitySum, y: 0};
             setScoreP1(scoreP1 + 1);
+            setBallVelocity(p2Velocity);
             socket.emit("update_score", [scoreP2, scoreP1]);
             if (!goalScoredRef.current) {
               socket.emit("send_message", {room: room, author: "Server", message: "Goal!",});
