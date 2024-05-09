@@ -81,23 +81,18 @@ function App_game() {
     setState(state + 1);
 
     const interval = setInterval(() => {
-      if (moveUpP1) {
-        setPaddlePositionP1(prevPos => Math.max(0, prevPos - 3));
+      const top = 0; 
+      const bottom = fieldHeight - paddleHeight;
+
+      if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
+        setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
         socket.emit("update_position", "up");
       }
-      if (moveDownP1) {
-        setPaddlePositionP1(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
+      else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
+        setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
         socket.emit("update_position", "down");
-        /*
-        if (paddlePositionP1 === 0) { // FIXME: Paddle gets stuck when on top of screen
-          setPaddlePositionP1(prevPos => prevPos);
-        }
-        else { // FIXME: Paddle goes past bounding box (down)
-          setPaddlePositionP1(prevPos => prevPos + 3)
-          socket.emit("update_position", "down");
-        }
-        */
       }
+      //Local Controls
       if (moveUpP2) {
         setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
       }
