@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Ball from "../game/components/Ball";
 import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
@@ -17,10 +17,11 @@ socket.on("connect_error", (error) => {
   console.error("Knas", error);
 });
 
-function App_game() {
+function App_game({room}) {
+  const goalScoredRef = useRef(false); // Är mutable mellan renders!
 
   const [username, setUsername] = useState("");
-  const [room, setRoom] = useState(123);
+  //const [room, setRoom] = useState("");
   const [showGame, setShowGame] = useState(false);
 
   const ballSize = 24;
@@ -79,6 +80,7 @@ function App_game() {
   useEffect(() => {
 
     setState(state + 1);
+    goalScoredRef.current = false;
 
     const interval = setInterval(() => {
       if (moveUpP1) {
@@ -133,13 +135,19 @@ function App_game() {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "goal"});
+            if (!goalScoredRef.current) {
+              socket.emit("send_message", {room: room, author: "Server", message: "Goal!"});
+              goalScoredRef.current = true;
+            }
           }
           
           if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: 123, author: "Server", message: "goal",});
+            if (!goalScoredRef.current) {
+              socket.emit("send_message", {room: room, author: "Server", message: "Goal!",});
+              goalScoredRef.current = true;
+            }
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };

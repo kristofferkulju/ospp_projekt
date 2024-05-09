@@ -54,10 +54,6 @@ io.on("connection", (socket) => {
         socket.to("123").emit("sync_score", data);
     });
 
-    socket.on("GOAL", (data) => {
-        socket.to(data.room).emit("receive_message", data);
-        console.log(`This is the message: ${data.message} With room: ${data.room}`);
-    });
 });
 
 server.listen(2001, () => {
