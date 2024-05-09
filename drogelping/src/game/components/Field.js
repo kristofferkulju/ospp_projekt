@@ -44,8 +44,8 @@ function Field({ scoreP1, scoreP2, children, width, height }) {
             }}
         >
             <Score scoreP1={scoreP1} scoreP2={scoreP2} />
-            {children}
             <Midfield height={height} />
+            {children}
         </div>
     );
 }
