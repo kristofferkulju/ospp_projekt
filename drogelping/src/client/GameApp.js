@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import Ball from "../game/components/Ball";
 import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
-import useScreenSize from "../game/hooks/useScreenSize";
 import useKeyPress from "../game/hooks/useKeyPress";
-import './GameApp.css';
-//import { io } from "socket.io-client";
-//const socket = io.connect("http://localhost:2001");
 import socket from './socket';
+import './GameApp.css';
 
 //function GameApp({ socket, room }) {
-function GameApp({ room }) {
+function GameApp({ room, isTextFieldFocused }) {
 
   const [username, setUsername] = useState("");
   const ballSize = 24;
@@ -67,20 +64,23 @@ function GameApp({ room }) {
       const top = 0; 
       const bottom = fieldHeight - paddleHeight;
 
-      if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
-        setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
-        socket.emit("update_position", "up");
-      }
-      else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
-        setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
-        socket.emit("update_position", "down");
-      }
-      //Local Controls
-      if (moveUpP2) {
-        setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
-      }
-      if (moveDownP2) {
-        setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
+      if (!isTextFieldFocused) { // Prevent movement while in chat
+        if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
+          setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
+          socket.emit("update_position", "up");
+        }
+        else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
+          setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
+          socket.emit("update_position", "down");
+        }
+
+        //Local Controls
+        if (moveUpP2) {
+          setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
+        }
+        if (moveDownP2) {
+          setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
+        }
       }
 
       setBallPosition((prevPos) => {
@@ -137,7 +137,7 @@ function GameApp({ room }) {
 
     }, 10);
     return () => clearInterval(interval);
-  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition]);
+  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition, isTextFieldFocused]);
 
   useEffect(() => {
     console.log("Use effect triggered.");
@@ -177,17 +177,6 @@ function GameApp({ room }) {
   return (
     <>
       <h1>DROGELPING</h1>
-
-      <input type="text"
-        placeholder="1 or 2"
-        value={username}
-        onChange={(event) => setUsername(event.target.value)}
-        onKeyDown={(event) => {
-          if (event.key === "Enter") {
-
-          }
-        }}
-      ></input>
 
       <div className="field">
         <Field width={fieldWidth} height={fieldHeight} scoreP1 = {scoreP1} scoreP2 = {scoreP2}>

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
+import './Chat.css'
 
-function Chat({socket, username, room}) {
+function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused, focus}) {
     const [currentMessage, setCurrentMessage] = useState("");
     const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "ASL"}]);
     const chatBodyRef = useRef(null);
@@ -25,6 +26,20 @@ function Chat({socket, username, room}) {
         return () => socket.off("receive_message");
     }, [socket]);
     
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    };
+
+    const handleFocus = () => {
+      setIsTextFieldFocused(true);
+    };
+
+    const handleUnfocus = () => {
+      setIsTextFieldFocused(false);
+    };
+
     useEffect(() => {
         if (chatBodyRef.current) {
             chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
@@ -38,26 +53,25 @@ function Chat({socket, username, room}) {
                     <div key={index} className="message">
                         <div className="sender">{messageContent.author}</div>
                         <div className="text">{messageContent.message}</div>
-        </div>
+                    </div>
                 ))}
-        </div>
-        
+            </div>
+
             <div className="chat-footer">
-            <input 
-            onKeyDown={(event) => { 
-                if (event.key === "Enter") { 
-                    sendMessage();
-                } 
-            }} 
-            type="text" 
+                <input
+                    className="chat-input"
+                    onKeyDown={handleKeyDown}
+                    onFocus={handleFocus}
+                    onBlur={handleUnfocus}
+                    type="text"
                     placeholder="Hey.."
-            value={currentMessage}
-            onChange={(event) => {
-                setCurrentMessage(event.target.value);
+                    value={currentMessage}
+                    onChange={(event) => {
+                        setCurrentMessage(event.target.value);
                     }} 
                 />
                 <button className="send" onClick={sendMessage}> &#9658;</button>
-        </div>
+            </div>
         </div>
     )
 }
