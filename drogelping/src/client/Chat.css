@@ -22,7 +22,6 @@
 .chat-window .message {
     display: flex;
     align-items: flex-start;
-    border-bottom: 1px solid #000000; /* Line Between Messages */
     padding: 5px;
     position: relative;
     background-color: transparent transparent;
@@ -49,18 +48,13 @@
 .chat-window .message .text::before {
     content: '';
     position: absolute;
-    width: 0;
-    height: 0;
     border-style: solid;
     border-width: 10px 15px 0;
     border-color: #eaeaea transparent transparent;
-    top: 10px;
     left: -15px;
-    transform: rotate(220deg);
 }
 .chat-footer {
     height: 40px;
-    border-top: none;
     display: flex;
 }
 .chat-footer .chat-input {
@@ -73,15 +67,22 @@
     color: #000000;
     background-color: #ffffff;
 }
-.chat-footer .chat-send { 
+.chat-footer .send { 
     border: none;
-    display: grid;
-    place-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
     flex: 15%;
     height: 100%;
-    background: transparent;
-    outline: none;
+    background-color: #009d25;
+    color: #ffffff;
     font-size: 1em;
-    padding: 0;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.chat-footer .send:hover {
+    background-color: #218838; /* Darker green on hover */
 }
