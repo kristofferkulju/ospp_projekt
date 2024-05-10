@@ -8,59 +8,71 @@
   display: grid;
   place-items: center;
 }
-
 .chat-window {
   width: 400px;
-  height: 250px; /* Locks height expansion of chat */
+  height: 300px; /* Locks height expansion of chat */
   border: 1px solid #263238; /* Bounding Box */
-  border-radius: 6px;  /* Rounds corners */
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   background: #8fc6a6;
   position: relative;
   overflow: auto;
-
 }
 .chat-window .message {
     display: flex;
     align-items: flex-start;
-    border: 1px solid #2200ff;
-    margin-bottom: 5px;
+    border-bottom: 1px solid #000000; /* Line Between Messages */
     padding: 5px;
     position: relative;
+    background-color: transparent transparent;
 }
 .chat-window .message .sender { /* Box around Name */
     min-width: 80px;
     margin-right: 10px;
-    border: 1px solid #e30000;
     font-weight: bold;
+    background-color: #00ff37;
+    border-radius: 20px; /* Rounded corners */
 }
-.chat-window .message .text { /* Box around message */
+.chat-window .message .text {
     flex-grow: 1;
-    border: 1px solid #00ff2a;
     font-style: italic;
     word-wrap: break-word;
-    overflow: hidden;
     text-align: left;
+    display: inline-block;
+    padding: 10px;
+    background-color: #eaeaea; /* Background color */
+    border-radius: 15px; /* Rounded corners */
+    position: relative;
+    max-width: 70%;
 }
-
+.chat-window .message .text::before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 15px 0;
+    border-color: #eaeaea transparent transparent;
+    top: 10px;
+    left: -15px;
+    transform: rotate(220deg);
+}
 .chat-footer {
     height: 40px;
-    border: 1px solid #ff00c3;
     border-top: none;
     display: flex;
 }
-
 .chat-footer .chat-input {
     flex: 85%;
     border: 0;
     padding: 0 0.7em;
     font-size: 1em;
     font-family: "Open Sans", sans-serif;
+    outline: none;
     color: #000000;
     background-color: #ffffff;
 }
-
 .chat-footer .chat-send { 
     border: none;
     display: grid;
@@ -71,10 +83,5 @@
     background: transparent;
     outline: none;
     font-size: 1em;
-    color: lightgray;
-    padding: 0
-}
-
-.chat-window p {
-  margin: 0; /* Removes space between messages */
+    padding: 0;
 }
