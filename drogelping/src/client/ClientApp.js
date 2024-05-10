@@ -6,9 +6,6 @@ import './ClientApp.css'
 
 function ClientApp({ username, room }) {
     const [isTextFieldFocused, setIsTextFieldFocused] = useState(false);
-    if (username && room) {
-        socket.emit("join_room", room);
-    }
     return (
     <div className="App background">
         <Chat socket={socket} username={username} room={room} isTextFieldFocused={isTextFieldFocused} setIsTextFieldFocused={setIsTextFieldFocused}/>

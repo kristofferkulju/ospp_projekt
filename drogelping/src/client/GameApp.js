@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Ball from "../game/components/Ball";
 import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
@@ -8,6 +8,8 @@ import './GameApp.css';
 
 //function GameApp({ socket, room }) {
 function GameApp({ room, isTextFieldFocused }) {
+
+  const goalScoredRef = useRef(false); // Är mutable mellan renders!
 
   const [username, setUsername] = useState("");
   const ballSize = 24;
@@ -59,7 +61,8 @@ function GameApp({ room, isTextFieldFocused }) {
   useEffect(() => {
 
     setState(state + 1);
-
+    goalScoredRef.current = false;
+    
     const interval = setInterval(() => {
       const top = 0; 
       const bottom = fieldHeight - paddleHeight;
@@ -112,14 +115,20 @@ function GameApp({ room, isTextFieldFocused }) {
             setScoreP2(scoreP2 + 1);
             console.log("Scored by player 2");
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: room, author: "Server", message: "P2_GOAL"});
+            if (!goalScoredRef.current) {
+              socket.emit("send_message", {room: room, author: "Server", message: "P2_Goal!"});
+              goalScoredRef.current = true;
+            }
           }
           
           else if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             console.log("Scored by player 1");
             socket.emit("update_score", [scoreP2, scoreP1]);
-            socket.emit("send_message", {room: room, author: "Server", message: "P1_GOAL",});
+            if (!goalScoredRef.current) {
+              socket.emit("send_message", {room: room, author: "Server", message: "P1_Goal!",});
+              goalScoredRef.current = true;
+            }
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
