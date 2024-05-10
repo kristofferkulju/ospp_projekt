@@ -62,6 +62,9 @@ body {
     border-radius: 5px;
     box-sizing: border-box;
 }
+.input-container input:focus {
+    outline: none;
+}
 .button {
     width: 100%;
     padding: 10px 2px;
