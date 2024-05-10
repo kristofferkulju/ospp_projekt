@@ -82,7 +82,7 @@ body {
 
 .chat-window .chat-body {
   height: auto;
-  background: #fff;
+  background: #8fc6a6; /* Background color of chat */
   width: 297px;
   position: relative;
 }

@@ -1,11 +1,11 @@
 :root {
-    --background: rgb(143,198,166);
+    --background: #8fc6a6;
     --window: #343434;
     --text: #ffffff;
     --active-tab: #383bff;
     --active-tab-text: #ffffff;
     --toggled: #00a908;
-    --untoggled: #636363;
+    --untoggled: #515151;
     display: grid;
     place-items: center;
     place-content: center;

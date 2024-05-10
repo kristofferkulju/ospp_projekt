@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './style.css';
 
-const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onChatClick, onGameClick}) => {
+const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick}) => {
   const [activeTab, setActiveTab] = useState('join');
   const [name, setName] = useState('');
   const [lobbyID, setLobbyID] = useState('');
@@ -81,6 +81,9 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onChatClick, 
     else {
         setErrorMessage('Please input a valid name and Lobby ID');
     }
+  };
+  const demoGame = () => {
+    onDemoClick(name, lobbyID);
   };
 
   return (
