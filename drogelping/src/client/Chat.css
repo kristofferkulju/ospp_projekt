@@ -1,0 +1,80 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,700");
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  color: #212121;
+  font-family: "Open Sans", sans-serif;
+  display: grid;
+  place-items: center;
+}
+
+.chat-window {
+  width: 400px;
+  height: 250px; /* Locks height expansion of chat */
+  border: 1px solid #263238; /* Bounding Box */
+  border-radius: 6px;  /* Rounds corners */
+  display: flex;
+  flex-direction: column;
+  background: #8fc6a6;
+  position: relative;
+  overflow: auto;
+
+}
+.chat-window .message {
+    display: flex;
+    align-items: flex-start;
+    border: 1px solid #2200ff;
+    margin-bottom: 5px;
+    padding: 5px;
+    position: relative;
+}
+.chat-window .message .sender { /* Box around Name */
+    min-width: 80px;
+    margin-right: 10px;
+    border: 1px solid #e30000;
+    font-weight: bold;
+}
+.chat-window .message .text { /* Box around message */
+    flex-grow: 1;
+    border: 1px solid #00ff2a;
+    font-style: italic;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-align: left;
+}
+
+.chat-footer {
+    height: 40px;
+    border: 1px solid #ff00c3;
+    border-top: none;
+    display: flex;
+}
+
+.chat-footer .chat-input {
+    flex: 85%;
+    border: 0;
+    padding: 0 0.7em;
+    font-size: 1em;
+    font-family: "Open Sans", sans-serif;
+    color: #000000;
+    background-color: #ffffff;
+}
+
+.chat-footer .chat-send { 
+    border: none;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    flex: 15%;
+    height: 100%;
+    background: transparent;
+    outline: none;
+    font-size: 1em;
+    color: lightgray;
+    padding: 0
+}
+
+.chat-window p {
+  margin: 0; /* Removes space between messages */
+}

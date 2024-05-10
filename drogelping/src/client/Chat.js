@@ -33,18 +33,16 @@ function Chat({socket, username, room}) {
 
     return (
         <div>
-        <div className= "chat-header"> 
-            <p>Live Chat</p>
+            <div className="chat-window" ref={chatBodyRef}>
+                {messageList.map((messageContent, index) => (
+                    <div key={index} className="message">
+                        <div className="sender">{messageContent.author}</div>
+                        <div className="text">{messageContent.message}</div>
         </div>
-        <div className="chat-window" ref={chatBodyRef}> 
-            <div className= "chat-body"> 
-                {messageList.map((messageContent) => {
-                    return <p><b>{messageContent.author}</b> : {messageContent.message}</p>
-                })}
-            </div>
+                ))}
         </div>
         
-        <div className= "chat-footer ">
+            <div className="chat-footer">
             <input 
             onKeyDown={(event) => { 
                 if (event.key === "Enter") { 
@@ -52,12 +50,13 @@ function Chat({socket, username, room}) {
                 } 
             }} 
             type="text" 
-            placeholder ="Hey.." 
+                    placeholder="Hey.."
             value={currentMessage}
             onChange={(event) => {
                 setCurrentMessage(event.target.value);
-            }}/>
-            <button onClick = {sendMessage}> &#9658;</button>
+                    }} 
+                />
+                <button className="send" onClick={sendMessage}> &#9658;</button>
         </div>
         </div>
     )
