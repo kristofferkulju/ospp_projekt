@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './style.css';
 
-const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick}) => {
+const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick }) => {
   const [activeTab, setActiveTab] = useState('join');
   const [name, setName] = useState('');
   const [lobbyID, setLobbyID] = useState('');
@@ -10,6 +10,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
   const [errorMessage, setErrorMessage] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const settingsRef = useRef(null);
+  const errorMsg = 'Please input a valid NAME and ID';
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -81,7 +82,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
         onSpectateClick(name, lobbyID);
     }
     else {
-        setErrorMessage('Please input a valid name and Lobby ID');
+        setErrorMessage(errorMsg);
     }
   };
 
@@ -90,7 +91,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
         onJoinClick(name, lobbyID);
     }
     else {
-        setErrorMessage('Please input a valid name and Lobby ID');
+        setErrorMessage(errorMsg);
     }
   };
 
@@ -106,7 +107,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
         //onJoinClick(name, lobbyID); // Join directly after creating room?
     }
     else {
-        setErrorMessage('Please input a valid name and Lobby ID');
+        setErrorMessage(errorMsg);
     }
   };
   const demoGame = () => {
@@ -124,24 +125,22 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
             <div className={`tab settings ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setShowSettings(true)} hidden>Lobby Settings</div>
         </div>
         {/*<div className={`content join ${activeTab === 'join' ? 'active' : ''}`}>*/}
-        <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '280px', overflow: 'auto' }}>
+        <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '225px', overflow: 'auto' }}>
             <div className="input-container">
-                <input type="text" placeholder="Enter Name" name="name" value={name} onChange={handleInputChange} className="name-input" />
-            </div>
-            <div className="input-container">
-                <input type="text" placeholder="Enter Lobby ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" />
+                <input type="text" placeholder="NAME" name="name" value={name} onChange={handleInputChange} className="name-input" maxLength={9}/>
+                <span className="separator">#</span>
+                <input type="text" placeholder="ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" maxLength={4}/>
             </div>
             <button className="button cyan" onClick={spectateLobby}>Spectate</button>
             <button className="button green" onClick={joinLobby}>Enter</button>
             <button className="button red" onClick={demoGame}>DEMO</button> {/* TEMPORARY */}
             {errorMessage && <p style={{ color : 'red' }}>{errorMessage}</p>}
         </div>
-        <div className="content create" style={{ display: activeTab === 'create' ? 'block' : 'none', height: '280px', overflow: 'auto' }}>
+        <div className="content create" style={{ display: activeTab === 'create' ? 'block' : 'none', height: '225px', overflow: 'auto' }}>
             <div className="input-container">
-                <input type="text" placeholder="Enter Name" name="name" value={name} onChange={handleInputChange} className="name-input" />
-            </div>
-            <div className="input-container">
-                <input type="text" placeholder="Enter Lobby ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" />
+                <input type="text" placeholder="NAME" name="name" value={name} onChange={handleInputChange} className="name-input" maxLength={9}/>
+                <span className="separator">#</span>
+                <input type="text" placeholder="ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" maxLength={4}/>
             </div>
             <button className="button purple" onClick={toggleSettingsPopup}>Lobby Settings</button>
             <button className="button green" onClick={createLobby}>Create</button>
@@ -149,7 +148,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
         </div>
         {showSettings && (
         <div className="settings-popup" ref={settingsRef}>
-            <div className="input-container">
+            <div className="settings-popup-container">
                 <div className="lobby-settings-header">Lobby Settings</div>
                 <div className="settingsText">Allow Spectators</div>
                 <input type="checkbox" id="allowSpectators" checked={allowSpectators} onChange={() => setAllowSpectators(!allowSpectators)} className="allowSpectators" />

@@ -176,7 +176,9 @@ function GameApp({ room, isTextFieldFocused }) {
 
   return (
     <>
-      <h1>DROGELPING</h1>
+      <h1>
+        #{room}
+      </h1>
 
       <div className="field">
         <Field width={fieldWidth} height={fieldHeight} scoreP1 = {scoreP1} scoreP2 = {scoreP2}>

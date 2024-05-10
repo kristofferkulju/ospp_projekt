@@ -16,16 +16,18 @@ function App() {
     const joinLobby = (name, lobbyID) => {
         setName(name);
         setLobbyID(lobbyID);
-        setCurrentPage('join');
+        setCurrentPage('demo');
     }
     const createLobby = (lobbyProperties) => {
         setLobbyProperties(lobbyProperties);
-        setCurrentPage('create');
+        setCurrentPage('start'); // Dummy
+        //setCurrentPage('create'); // TODO: IMPLEMENT
     }
     const spectateLobby = (name, lobbyID) => {
         setName(name);
         setLobbyID(lobbyID);
-        setCurrentPage('spectate');
+        setCurrentPage('start'); // Dummy
+        //setCurrentPage('spectate'); // TODO: IMPLEMENT
     }
     const demoGame = () => { /* TEMPORARY */
         setName("DEMO");
@@ -52,7 +54,7 @@ function App() {
         */}
         {currentPage === 'demo' && 
             <div>
-                <Exit navigateToLobby={navigateToLobby} />
+                <Exit navigateToLobby={navigateToLobby}/>
                 <ClientApp username={name} room={lobbyID}/>
             </div>
         }

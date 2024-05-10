@@ -31,7 +31,7 @@
     margin-right: 10px;
     font-weight: bold;
     background-color: #00ff37;
-    border-radius: 20px; /* Rounded corners */
+    border-radius: 10px; /* Rounded corners */
 }
 .chat-window .message .text {
     flex-grow: 1;
@@ -51,7 +51,7 @@
     border-style: solid;
     border-width: 10px 15px 0;
     border-color: #eaeaea transparent transparent;
-    left: -15px;
+    left: -10px;
 }
 .chat-footer {
     height: 40px;
