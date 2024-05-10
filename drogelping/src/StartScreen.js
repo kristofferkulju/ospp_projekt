@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './style.css';
 
 const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick}) => {
@@ -8,10 +8,37 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
   const [allowSpectators, setAllowSpectators] = useState(false);
   const [maxPlayers, setMaxPlayers] = useState(2);
   const [errorMessage, setErrorMessage] = useState('');
+  const [showSettings, setShowSettings] = useState(false);
+  const settingsRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+        setShowSettings(false);
+      }
+    }
+    function handleEscKey(event) {
+        if (event.key === 'Escape') {
+          setShowSettings(false);
+        }
+      }
+
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("keydown", handleEscKey);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [settingsRef]);
 
   const toggleTab = (tabName) => {
     setErrorMessage('');
     setActiveTab(tabName);
+    if (tabName === 'settings') {
+        setShowSettings(true);
+    } else {
+        setShowSettings(false);
+    }
   };
 
   const handleInputChange = (event) => {
@@ -85,15 +112,19 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
   const demoGame = () => {
     onDemoClick(name, lobbyID);
   };
+  const toggleSettingsPopup = () => {
+    setShowSettings(!showSettings); // Toggle the visibility of the settings pop-up
+  };
 
   return (
     <div className="container">
         <div className="tabs">
             <div className={`tab join ${activeTab === 'join' ? 'active' : ''}`} onClick={() => toggleTab('join')}>Join Lobby</div>
             <div className={`tab create ${activeTab === 'create' ? 'active' : ''}`} onClick={() => toggleTab('create')}>Create Lobby</div>
-            <div className={`tab settings ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => toggleTab('settings')} hidden>Lobby Settings</div>
+            <div className={`tab settings ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setShowSettings(true)} hidden>Lobby Settings</div>
         </div>
-        <div className={`content join ${activeTab === 'join' ? 'active' : ''}`}>
+        {/*<div className={`content join ${activeTab === 'join' ? 'active' : ''}`}>*/}
+        <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '280px', overflow: 'auto' }}>
             <div className="input-container">
                 <input type="text" placeholder="Enter Name" name="name" value={name} onChange={handleInputChange} className="name-input" />
             </div>
@@ -102,21 +133,24 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
             </div>
             <button className="button cyan" onClick={spectateLobby}>Spectate</button>
             <button className="button green" onClick={joinLobby}>Enter</button>
+            <button className="button red" onClick={demoGame}>DEMO</button> {/* TEMPORARY */}
             {errorMessage && <p style={{ color : 'red' }}>{errorMessage}</p>}
         </div>
-        <div className={`content create ${activeTab === 'create' ? 'active' : ''}`}>
+        <div className="content create" style={{ display: activeTab === 'create' ? 'block' : 'none', height: '280px', overflow: 'auto' }}>
             <div className="input-container">
                 <input type="text" placeholder="Enter Name" name="name" value={name} onChange={handleInputChange} className="name-input" />
             </div>
             <div className="input-container">
                 <input type="text" placeholder="Enter Lobby ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" />
             </div>
-            <button className="button purple" onClick={() => toggleTab('settings')}>Lobby Settings</button>
+            <button className="button purple" onClick={toggleSettingsPopup}>Lobby Settings</button>
             <button className="button green" onClick={createLobby}>Create</button>
             {errorMessage && <p style={{ color : 'red' }}>{errorMessage}</p>}
         </div>
-        <div className={`content settings ${activeTab === 'settings' ? 'active' : ''}` }>
+        {showSettings && (
+        <div className="settings-popup" ref={settingsRef}>
             <div className="input-container">
+                <div className="lobby-settings-header">Lobby Settings</div>
                 <div className="settingsText">Allow Spectators</div>
                 <input type="checkbox" id="allowSpectators" checked={allowSpectators} onChange={() => setAllowSpectators(!allowSpectators)} className="allowSpectators" />
                 <label htmlFor="allowSpectators" className="toggleLabel"></label>
@@ -129,6 +163,7 @@ const StartScreen = ({onJoinClick, onCreateClick, onSpectateClick, onDemoClick})
             <button className="button light-grey" onClick={() => toggleTab('create')}>Back</button>
             {/* -------------------------------------- */}
         </div> 
+        )}
     </div>
   );
 };
