@@ -43,7 +43,7 @@ function Field({ scorePlayer, scoreOpponent, children, width, height }) {
                 borderWidth: '5px',
             }}
         >
-            <Score scorePlayer={scorePlayer} scoreOpponent={scoreOpponent} />
+            {/*<Score scorePlayer={scorePlayer} scoreOpponent={scoreOpponent} />*/}
             <Midfield height={height} />
             {children}
         </div>

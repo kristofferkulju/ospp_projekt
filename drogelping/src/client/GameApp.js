@@ -287,14 +287,14 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
   return (
     <>
       <h1>
-        #{room}
+        {name}#{room} 
       </h1>
       <div id="message-container">
         <div>
-            playerSide: {playerStatus.side}
+            Your side: {playerStatus.side}
         </div>
         <div>
-            opponentSide: {opponentStatus.side}
+            Opponent's side: {opponentStatus.side}
         </div>
 
         <div class="innerText">
