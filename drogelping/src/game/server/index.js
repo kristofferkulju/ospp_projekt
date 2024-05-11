@@ -18,14 +18,27 @@ const io = new Server(server, {
     },
 });
 
+var player1 = "";
+var player2 = "";
+
 io.on("connection", (socket) => {
 
     console.log(`[CONNECTION_ESTABLISHED](${socket.id})`); // SocketChat, SocketGame
 
     socket.on("join_room", (data) => { // SocketChat
-        socket.join(data.room);
+        socket.join(`${data[0]}`);
         socket.emit("receive_message", data);
         console.log(`[JOIN_ROOM](${socket.id}): (${data})`);
+
+        // Håller reda på vänster och höger spelare för spectators
+        if (data[1] !== "spectate") {
+            if (player1 === "") {
+                player1 = data[2];
+            } else if (player2 === "") {
+                player2 = data[2];
+            }
+        }
+
     });
 
     socket.on("send_message", (data) => { // SocketChat (messages), SocketGame (goals)
@@ -34,23 +47,28 @@ io.on("connection", (socket) => {
     });
 
     socket.on("update_position", (data) => { // SocketGame (paddle position)
-        socket.join("123");
-        socket.to("123").emit("update_position", data);
+        //socket.join(`${data.room}`);
+        socket.to(`${data.room}`).emit("update_position", data);
         console.log(`[UPDATE_POSITION]: *${data}*`);
     });
 
     socket.on("sync_ball", (data) => {
-        socket.to("123").emit("sync_ball", data);
+        socket.to(`${data[2]}`).emit("sync_ball", data);
         console.log(`[SYNC_BALL]`);
     });
 
     socket.on("sync_paddle", (data) => {
-        socket.to("123").emit("sync_paddle", data);
-        console.log(`[SYNC_PADDLE]: *${data}*`);
+        if (data[0] === player1) {
+            socket.to(`${data[3]}`).emit("sync_paddle", [data[1], data[2], "P1"]);
+        }
+        else {
+            socket.to(`${data[3]}`).emit("sync_paddle", [data[1], data[2], "P2"]);
+        }
+        console.log(`[SYNC_PADDLE]: *${data[0]}*`);
     });
 
     socket.on("update_score", (data) => {
-        socket.to("123").emit("sync_score", data);
+        socket.to(`${data[2]}`).emit("sync_score", data);
         console.log(`[UPDATE_SCORE]: *${data}*`);
     });
 });

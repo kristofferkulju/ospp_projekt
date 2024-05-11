@@ -6,41 +6,37 @@ import useKeyPress from "../game/hooks/useKeyPress";
 import socket from './socket';
 import './GameApp.css';
 
+var isInRoom = false;
+
 //function GameApp({ socket, room }) {
-function GameApp({ room, isTextFieldFocused }) {
+function GameApp({ room, isTextFieldFocused, name, mode}) {
+
+  var game_mode = mode
+
+  if (isInRoom === false) {
+    socket.emit("join_room", [room, game_mode, name]);
+    isInRoom = true;
+  }
 
   const goalScoredRef = useRef(false); // Är mutable mellan renders!
 
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(name);
   const ballSize = 24;
-  const [upP1, setUpP1] = useState("w");
-  const [downP1, setDownP1] = useState("s");
-  const [upP2, setUpP2] = useState("ArrowUp");
-  const [downP2, setDownP2] = useState("ArrowDown");
+  const [upP1, setUpP1] = useState("ArrowUp");
+  const [downP1, setDownP1] = useState("ArrowDown");
   const [scoreP1, setScoreP1] = useState(0);
   const [scoreP2, setScoreP2] = useState(0);
 
   const moveUpP1 = useKeyPress([upP1]);
   const moveDownP1 = useKeyPress([downP1]);
-  const moveUpP2 = useKeyPress([upP2]);
-  const moveDownP2 = useKeyPress([downP2]);
 
 
   // Gör så att man endast kan röra sin egen paddel med w och s efter att man angett vilken spelare man är
   // TODO: Gör att detta har att göra med vilken spelare man är
   useEffect(() => {
-    if (username === "1") {
-      setUpP1("w");
-      setDownP1("s");
-      setUpP2("");
-      setDownP2("");
-    }
-
-    else if (username === "2") {
+    if (game_mode === "spectate") {
       setUpP1("");
       setDownP1("");
-      setUpP2("w");
-      setDownP2("s");
     }
 
     }, [username]);
@@ -60,6 +56,7 @@ function GameApp({ room, isTextFieldFocused }) {
   
   useEffect(() => {
 
+
     setState(state + 1);
     goalScoredRef.current = false;
     
@@ -70,19 +67,15 @@ function GameApp({ room, isTextFieldFocused }) {
       if (!isTextFieldFocused) { // Prevent movement while in chat
         if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
           setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
-          socket.emit("update_position", "up");
+          //socket.emit("update_position", {room : room, paddlePosition : [paddlePositionP1, paddlePositionP2]});
+          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2, room]);
+
         }
         else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
           setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
-          socket.emit("update_position", "down");
-        }
+          //socket.emit("update_position", { room: room, paddlePosition: [paddlePositionP1, paddlePositionP2] });
+          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2, room]);
 
-        //Local Controls
-        if (moveUpP2) {
-          setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
-        }
-        if (moveDownP2) {
-          setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
         }
       }
 
@@ -114,9 +107,9 @@ function GameApp({ room, isTextFieldFocused }) {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             console.log("Scored by player 2");
-            socket.emit("update_score", [scoreP2, scoreP1]);
-            if (!goalScoredRef.current) {
-              socket.emit("send_message", {room: room, author: "Server", message: "P2_Goal!"});
+            socket.emit("update_score", [scoreP2, scoreP1, room]);
+            if (!goalScoredRef.current && game_mode !== "spectate") {
+              socket.emit("send_message", {room: room, author: "Server", message: username + " scored a goal!"});
               goalScoredRef.current = true;
             }
           }
@@ -125,8 +118,8 @@ function GameApp({ room, isTextFieldFocused }) {
             setScoreP1(scoreP1 + 1);
             console.log("Scored by player 1");
             socket.emit("update_score", [scoreP2, scoreP1]);
-            if (!goalScoredRef.current) {
-              socket.emit("send_message", {room: room, author: "Server", message: "P1_Goal!",});
+            if (!goalScoredRef.current && game_mode !== "spectate") {
+              socket.emit("send_message", {room: room, author: "Server", message: username + " scored a goal!",});
               goalScoredRef.current = true;
             }
           }
@@ -134,11 +127,12 @@ function GameApp({ room, isTextFieldFocused }) {
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
-
-        if (state % 500 === 0) {
-          socket.emit("sync_ball", [nextPosition, ballVelocity]);
-          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2]);
+        if (game_mode !== "spectate") {
+          if (state % 100 === 0) {
+            socket.emit("sync_ball", [nextPosition, ballVelocity, room]);
+          }
         }
+        
 
         return nextPosition;
 
@@ -146,15 +140,13 @@ function GameApp({ room, isTextFieldFocused }) {
 
     }, 10);
     return () => clearInterval(interval);
-  }, [moveUpP1, moveDownP1, moveUpP2, moveDownP2, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition, isTextFieldFocused]);
+  }, [moveUpP1, moveDownP1, ballVelocity, paddlePositionP1, paddlePositionP2, ballPosition, isTextFieldFocused]);
 
   useEffect(() => {
     console.log("Use effect triggered.");
     socket.on("update_position", data => {
-      if (data === "up") {
-        setPaddlePositionP2(prevPos => Math.max(0, prevPos - 3));
-      } else if (data === "down") {
-        setPaddlePositionP2(prevPos => Math.min(fieldHeight - paddleHeight, prevPos + 3));
+      if (game_mode !== "spectate") {
+        //socket.to(`${data[3]}`).emit("sync_paddle", [data[1], data[2], () => ((data[0] === player1) ? "P1" : "P2")]);setPaddlePositionP2(data.paddlePosition[0]);
       }
     });
 
@@ -164,10 +156,18 @@ function GameApp({ room, isTextFieldFocused }) {
     });
 
     socket.on("sync_paddle", (data) => {
-      if (data[0] === "1") {
-        setPaddlePositionP2(data[2]);
+      if (game_mode === "spectate") {
+        if (data[2] === "P1") {
+          setPaddlePositionP1(data[0]);
+          setPaddlePositionP2(data[1]);
+        }
+        else {
+          setPaddlePositionP2(data[0]);
+          setPaddlePositionP1(data[1]);
+        }
+      } else {
+        setPaddlePositionP2(data[0]);
       }
-
     });
 
     socket.on("update_score", (data) => {
@@ -179,7 +179,7 @@ function GameApp({ room, isTextFieldFocused }) {
         socket.off("update_position");
         socket.off("sync_ball");
         socket.off("sync_paddle");
-        socket.off("update_score");
+        socket.off("sync_score");
     };
   }, [socket]);
 

@@ -7,6 +7,8 @@ import './App.css'
 //import Create from "..."
 //import Join from "..."
 
+var mode = ""
+
 function App() {
     const [currentPage, setCurrentPage] = useState('start');
     const [name, setName] = useState('');
@@ -26,8 +28,8 @@ function App() {
     const spectateLobby = (name, lobbyID) => {
         setName(name);
         setLobbyID(lobbyID);
-        setCurrentPage('start'); // Dummy
-        //setCurrentPage('spectate'); // TODO: IMPLEMENT
+        setCurrentPage('demo');
+        mode = "spectate";
     }
     const demoGame = () => { /* TEMPORARY */
         setName("DEMO");
@@ -55,7 +57,7 @@ function App() {
         {currentPage === 'demo' && 
             <div>
                 <Exit navigateToLobby={navigateToLobby}/>
-                <ClientApp username={name} room={lobbyID}/>
+                <ClientApp username={name} room={lobbyID} mode={mode} />
             </div>
         }
     </div>

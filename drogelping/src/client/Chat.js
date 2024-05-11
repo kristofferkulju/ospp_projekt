@@ -3,7 +3,7 @@ import './Chat.css'
 
 function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused, focus}) {
     const [currentMessage, setCurrentMessage] = useState("");
-    const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "ASL"}]);
+    const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "Welcome to the chat. Remember to be respectful!"}]);
     const chatBodyRef = useRef(null);
 
     const sendMessage = async () => {
