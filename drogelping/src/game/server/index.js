@@ -20,6 +20,8 @@ const io = new Server(server, {
 
 var player1 = "";
 var player2 = "";
+var player1Ready = false;
+var player2Ready = false;
 
 io.on("connection", (socket) => {
 
@@ -40,6 +42,26 @@ io.on("connection", (socket) => {
         }
 
     });
+
+    socket.on("confirm_ready", (data) => {
+        socket.to(`${data.room}`).emit("receive_message", `${data} is ready`);
+        if (data === player1) {
+            player1Ready = true;
+        }
+        if (data === player2) {
+            player2Ready = true;
+        }
+        console.log(`Player (${socket.id}) is ready`);
+    });
+
+    socket.on("check_opponent_ready", (data) => {
+        if (data === player1) {
+            socket.emit("is_ready", [player2Ready]);
+        }
+        if (data === player2) {
+            socket.emit("is_ready", [player1Ready]);
+        }
+    })
 
     socket.on("send_message", (data) => { // SocketChat (messages), SocketGame (goals)
         socket.to(`${data.room}`).emit("receive_message", data);
