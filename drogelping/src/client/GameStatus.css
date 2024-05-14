@@ -1,24 +1,37 @@
 .game-container {
-  display: flex;
-  justify-content: space-between;
-}
-  
-.player-status {
+  width: 1000px;
+  height: 50px;
   display: flex;
   flex-direction: row;
-  align-items: center;
-  margin: 0px 250px;
+  justify-content: space-between;
 }
-  
+
+.left {
+    margin: 0px 0%;
+}
+
+.right {
+    margin: 0px 0%;
+}
+
+.YouText {
+    font-size: 25px;
+    font-weight: bold;
+    color: #000000;
+}
+
+.OpponentText {
+    font-size: 25px;
+    color: #797979;
+}
+
 .status-box {
-  width: 80px;
+  width: 150px;
   height: 30px;
   border: 1px solid #000;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Text */
   align-items: center;
-  margin-left: 15px;
-  margin-bottom: 15px;
 }
   
 .status-box.joined {

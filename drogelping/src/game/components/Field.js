@@ -16,20 +16,20 @@ function Midfield({ height }) {
     );
 }
 
-function Score({ scoreP1, scoreP2 }) {
+function Score({ scorePlayer, scoreOpponent }) {
     return (
         <div style={{ position: 'absolute', width: '100%', top: '20px', pointerEvents: 'none', fontFamily: "'Exo', sans-serif" }}>
             <div style={{ position: 'absolute', left: '440px', fontSize: '34px', color: 'white', textShadow: '1px 1px 1px #000000', fontWeight: '700' }}>
-                {scoreP1}
+                {scorePlayer}
             </div>
             <div style={{ position: 'absolute', right: '435px', fontSize: '34px', color: 'white', textShadow: '1px 1px 1px #000000', fontWeight: '700' }}>
-                {scoreP2}
+                {scoreOpponent}
             </div>
         </div>
     );
 }
 
-function Field({ scoreP1, scoreP2, children, width, height }) {
+function Field({ scorePlayer, scoreOpponent, children, width, height }) {
     return (
         <div
             style={{
@@ -43,7 +43,7 @@ function Field({ scoreP1, scoreP2, children, width, height }) {
                 borderWidth: '5px',
             }}
         >
-            <Score scoreP1={scoreP1} scoreP2={scoreP2} />
+            <Score scorePlayer={scorePlayer} scoreOpponent={scoreOpponent} />
             <Midfield height={height} />
             {children}
         </div>

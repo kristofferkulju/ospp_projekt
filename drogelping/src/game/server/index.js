@@ -11,6 +11,8 @@
  *    > MaxPlayers = 2
  * ## Ball is still lagging / score can fall behind (global gamestate?) 
  * ## Double connections (worked around atm)
+ * ## "Ready" before someone joins leads to "Not ready" on their screen, but works in practice.
+ * ## Goals upon opponent grants the opponent goal
 */
 const express = require("express");
 const app = express();
@@ -80,6 +82,13 @@ io.on("connection", (socket) => {
             socket.to(`${data.room}`).emit("both_joined", {name: data.name, room: data.room}); // Updates for last player, Opponent "joined status".
             socket.emit("both_joined", {name: data.name, room: data.room}); // Updates for last player, the Opponent "joined status".
         }
+        const isLeft = data.name === players[0].name ? true : (data.name === players[1].name ? false : "none");
+        socket.emit("set_side", {name: data.name, room: data.room, leftside: isLeft});
+
+        if (data.name === players[0].name) {
+        } else if (data.name === players[1].name) {
+            socket.emit("set_side", {name: data.name, room: data.room, leftside: false});
+        }
         //console.log(`[JOIN_ROOM](${socket.id})`);
     });
 
@@ -119,15 +128,15 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sync_paddle", (data) => {
-        let player = data.name === players[0].name ? "P1" : "P2";
-        socket.to(`${data.room}`).emit("sync_paddle", {paddlePositionP1: data.paddlePositionP1, paddlePositionP2: data.paddlePositionP2, player: player});
-        //console.log(`[SYNC_PADDLE](${socket.id}): *${data.name}*`);
+        socket.to(`${data.room}`).emit("sync_paddle", {paddlePositionPlayer: data.paddlePositionPlayer, paddlePositionOpponent: data.paddlePositionOpponent});
+        let player = data.name === players[0].name ? "left" : "right";
+        console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
 
     socket.on("update_score", (data) => {
         let player_score = data.name === players[0].name ? "P1" : "P2";
         socket.to(`${data.room}`).emit("sync_score", data);
-        //console.log(`[UPDATE_SCORE](${socket.id}): (${data.scoreP1}-${data.scoreP2})`);
+        console.log(`[UPDATE_SCORE](${socket.id}): (${data.scorePlayer}-${data.scoreOpponent})`);
     });
 });
 
