@@ -4,47 +4,74 @@ import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
 import useKeyPress from "../game/hooks/useKeyPress";
 import socket from './socket';
+import GameStatus from './GameStatus';
 import './GameApp.css';
 
-var isInRoom = false;
-var isReady = false;
-var isOpponentReady = false;
+let lock = false;
+let gameActive = false;
 
-//function GameApp({ socket, room }) {
 function GameApp({ room, isTextFieldFocused, name, mode}) {
 
-  var game_mode = mode
+  const [playerStatus, setPlayerStatus] = useState({
+    hasJoined: false,
+    isReady: false
+  });
+  const [opponentStatus, setOpponentStatus] = useState({
+    hasJoined: false,
+    isReady: false
+  });
+  const handleToggleJoinPlayer = () => {
+    setPlayerStatus({ ...playerStatus, hasJoined: !playerStatus.hasJoined });
+  };
+  const handleToggleReadyPlayer = () => {
+    setPlayerStatus({ ...playerStatus, isReady: !playerStatus.isReady });
+    lock = playerStatus.isReady;
+  };
+
+  function startCountdown(seconds, callback) {
+    let count = seconds;
+
+    function countdown() {
+      if (count >= 0) {
+        document.getElementById("message-container").innerText = count;
+        setTimeout(countdown, 1000);
+        count--;
+      } else { 
+        document.getElementById("message-container").innerText = "";
+        callback(); 
+      }
+    }
+    countdown();
+  }
+
 
   // Sends a confirmation to the server that a player has joined
-  if (isInRoom === false) {
-    socket.emit("join_room", [room, game_mode, name]);
-    isInRoom = true;
+  if (!playerStatus.hasJoined) {
+    socket.emit("join_room", {room: room, name: name, mode: mode});
+    handleToggleJoinPlayer(); // TODO: Toggle back to false if player leaves
   }
   
   const goalScoredRef = useRef(false); // Är mutable mellan renders!
   
-  const [username, setUsername] = useState(name);
   const ballSize = 24;
   const [upP1, setUpP1] = useState("ArrowUp");
   const [downP1, setDownP1] = useState("ArrowDown");
   const [scoreP1, setScoreP1] = useState(0);
   const [scoreP2, setScoreP2] = useState(0);
-  const [enter, setReady] = useState("Enter");
   
   const moveUpP1 = useKeyPress([upP1]);
   const moveDownP1 = useKeyPress([downP1]);
   
-  const confirmReady = useKeyPress([enter]);
 
   // Gör så att man endast kan röra sin egen paddel med w och s efter att man angett vilken spelare man är
   // TODO: Gör att detta har att göra med vilken spelare man är
   useEffect(() => {
-    if (game_mode === "spectate") {
+    if (mode === "spectate") {
       setUpP1("");
       setDownP1("");
     }
     
-  }, [username]);
+  }, [mode]);
   
   
   const fieldWidth = 1000;
@@ -66,27 +93,31 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     setState(state + 1);
     goalScoredRef.current = false;
     
-    if (confirmReady) {
-      socket.emit("confirm_ready", [username]);
-      isReady = true;
+    if (playerStatus.isReady && !lock) {
+      socket.emit("confirm_ready", {room: room, name: name, ready: true});
+      lock = true;
+      socket.emit("ready_waiting", {room: room, name: name});
     }
-    socket.emit("check_opponent_ready", [username]);
+    else if (!playerStatus.isReady && lock) {
+      socket.emit("confirm_ready", {room: room, name: name, ready: false});
+      lock = false;
+    }
     
     const interval = setInterval(() => {
       const top = 0;
       const bottom = fieldHeight - paddleHeight;
       
-      if (!isTextFieldFocused && isReady && isOpponentReady) { // Prevent movement while in chat
+      if (!isTextFieldFocused && playerStatus.isReady && gameActive) { // Prevent movement while in chat
         if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
           setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
           //socket.emit("update_position", {room : room, paddlePosition : [paddlePositionP1, paddlePositionP2]});
-          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2, room]);
+          socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
           
         }
         else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
           setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
           //socket.emit("update_position", { room: room, paddlePosition: [paddlePositionP1, paddlePositionP2] });
-          socket.emit("sync_paddle", [username, paddlePositionP1, paddlePositionP2, room]);
+          socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
 
         }
       }
@@ -97,7 +128,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           left: prevPos.left
         };
 
-        if (isReady && isOpponentReady) {
+        if (playerStatus.isReady && gameActive) {
           nextPosition.top += ballVelocity.y;
           nextPosition.left += ballVelocity.x;
         }
@@ -125,9 +156,9 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           if (nextPosition.left <= 0) {
             setScoreP2(scoreP2 + 1);
             console.log("Scored by player 2");
-            socket.emit("update_score", [scoreP2, scoreP1, room]);
-            if (!goalScoredRef.current && game_mode !== "spectate") {
-              socket.emit("send_message", {room: room, author: "Server", message: username + " scored a goal!"});
+            socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
+            if (!goalScoredRef.current && mode !== "spectate") {
+              socket.emit("send_message", {author: "Server", room: room, message: name + " scored a goal!"});
               goalScoredRef.current = true;
             }
           }
@@ -135,9 +166,9 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           else if (nextPosition.left + ballSize >= fieldWidth) {
             setScoreP1(scoreP1 + 1);
             console.log("Scored by player 1");
-            socket.emit("update_score", [scoreP2, scoreP1]);
-            if (!goalScoredRef.current && game_mode !== "spectate") {
-              socket.emit("send_message", {room: room, author: "Server", message: username + " scored a goal!",});
+            socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
+            if (!goalScoredRef.current && mode !== "spectate") {
+              socket.emit("send_message", {author: "Server", room: room, message: name + " scored a goal!",});
               goalScoredRef.current = true;
             }
           }
@@ -145,9 +176,9 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
-        if (game_mode !== "spectate") {
+        if (mode !== "spectate") {
           if (state % 100 === 0) {
-            socket.emit("sync_ball", [nextPosition, ballVelocity, room]);
+            socket.emit("sync_ball", {nextPosition: nextPosition, ballVelocity: ballVelocity, room: room});
           }
         }
         
@@ -161,59 +192,72 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
   
   useEffect(() => {
     console.log("Use effect triggered.");
-    
-    socket.on("is_ready", (data) => {
-      if (data) {
-        isOpponentReady = true;
-      }
-      
+    socket.on("both_joined", () => {
+        opponentStatus.hasJoined = true;
+    });
+    socket.on("opponent_joined", (data) => {
+        setOpponentStatus({ ...opponentStatus, isReady: data.ready });
+    });
+    socket.on("countdown", (data) => {
+        startCountdown(3, () => {
+            socket.emit("countdown_complete", {name: name, room: data.room});
+            gameActive = true;
+        });
     });
 
-    socket.on("update_position", data => {
-      if (game_mode !== "spectate") {
+    socket.on("update_position", () => {
+      if (mode !== "spectate") {
         //socket.to(`${data[3]}`).emit("sync_paddle", [data[1], data[2], () => ((data[0] === player1) ? "P1" : "P2")]);setPaddlePositionP2(data.paddlePosition[0]);
       }
     });
 
     socket.on("sync_ball", (data) => { 
-      setBallPosition(data[0]);
-      setBallVelocity(data[1]);
+      setBallPosition(data.nextPosition);
+      setBallVelocity(data.ballVelocity);
     });
 
     socket.on("sync_paddle", (data) => {
-      if (game_mode === "spectate") {
-        if (data[2] === "P1") {
-          setPaddlePositionP1(data[0]);
-          setPaddlePositionP2(data[1]);
+      if (mode === "spectate") {
+        if (data.player === "P1") {
+          setPaddlePositionP1(data.paddlePositionP1); // 0
+          setPaddlePositionP2(data.paddlePositionP2); // 1
         }
-        else {
-          setPaddlePositionP2(data[0]);
-          setPaddlePositionP1(data[1]);
+        else if (data.player === "P2") {
+          setPaddlePositionP2(data.paddlePositionP1); // 0
+          setPaddlePositionP1(data.paddlePositionP2); // 1
         }
       } else {
-        setPaddlePositionP2(data[0]);
+        setPaddlePositionP2(data.paddlePositionP1);
       }
     });
 
-    socket.on("update_score", (data) => {
-      setScoreP1(data[0]);
-      setScoreP2(data[1]);
+    socket.on("sync_score", (data) => {
+      setScoreP1(data.scoreP1);
+      setScoreP2(data.scoreP2);
     })
 
     return () => {
+        socket.off("both_joined");
+        socket.off("opponent_joined");
+        socket.off("countdown");
         socket.off("update_position");
         socket.off("sync_ball");
         socket.off("sync_paddle");
         socket.off("sync_score");
-        socket.off("is_ready");
     };
-  }, [socket]);
+  }, [mode, name, opponentStatus]);
 
   return (
     <>
       <h1>
         #{room}
       </h1>
+      <div id="message-container">
+        <div class="innerText">
+            <button onClick={handleToggleReadyPlayer}>{playerStatus.isReady ? 'Unready' : 'Ready'}</button>
+        </div>
+        <GameStatus playerStatus={playerStatus} opponentStatus={opponentStatus}/>
+      </div>
 
       <div className="field">
         <Field width={fieldWidth} height={fieldHeight} scoreP1 = {scoreP1} scoreP2 = {scoreP2}>
