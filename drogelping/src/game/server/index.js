@@ -42,6 +42,7 @@ function send_receive(socket, data, message) {
 }
 
 function join_helper(socket, data) {
+
     let message = (data.mode === "spectate") ? `is now spectating room ${data.room}` : `has joined room ${data.room}`;
     let list = (data.mode === "spectate") ? spectators : players;
     if (!list.find(entry => entry.socketID === socket.id)) {
@@ -72,6 +73,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("join_room", (data) => { // TODO: Double "Joined" message (workaround atm)
+        
         socket.join(`${data.room}`);
         join_helper(socket, data);
         if (players.length === MAXPLAYERS) {

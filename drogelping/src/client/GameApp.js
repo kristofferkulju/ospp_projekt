@@ -14,18 +14,25 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
 
   const [playerStatus, setPlayerStatus] = useState({
     hasJoined: false,
-    isReady: false
+    isReady: false,
+    leftPaddler: false
   });
   const [opponentStatus, setOpponentStatus] = useState({
     hasJoined: false,
-    isReady: false
+    isReady: false,
+    leftPaddler: false
   });
   const handleToggleJoinPlayer = () => {
-    setPlayerStatus({ ...playerStatus, hasJoined: !playerStatus.hasJoined });
+      setPlayerStatus({ ...playerStatus, hasJoined: !playerStatus.hasJoined });
   };
   const handleToggleReadyPlayer = () => {
-    setPlayerStatus({ ...playerStatus, isReady: !playerStatus.isReady });
+    if (opponentStatus.isReady === false) {
+      setPlayerStatus({ ...playerStatus, isReady: !playerStatus.isReady, leftPaddler: !playerStatus.leftPaddler });  
+    } else {
+      setPlayerStatus({ ...playerStatus, isReady: !playerStatus.isReady});
+    }
     lock = playerStatus.isReady;
+
   };
 
   function startCountdown(seconds, callback) {
@@ -109,15 +116,26 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
       
       if (!isTextFieldFocused && playerStatus.isReady && gameActive) { // Prevent movement while in chat
         if (moveUpP1 && !moveDownP1 && paddlePositionP1 > top) {
-          setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
+          if (playerStatus.leftPaddler === false) {
+            setPaddlePositionP2(prevPos => Math.max(top, prevPos - 3));
+            socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});  
+          } else {
+            setPaddlePositionP1(prevPos => Math.max(top, prevPos - 3));
+            socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
+          }
           //socket.emit("update_position", {room : room, paddlePosition : [paddlePositionP1, paddlePositionP2]});
-          socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
           
         }
         else if (moveDownP1 && !moveUpP1 && paddlePositionP1 < bottom) {
-          setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
+          if (playerStatus.leftPaddler === false) {
+            setPaddlePositionP2(prevPos => Math.min(bottom, prevPos + 3));
+            socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});  
+          } else {
+            setPaddlePositionP1(prevPos => Math.min(bottom, prevPos + 3));
+            socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
+          }
+          
           //socket.emit("update_position", { room: room, paddlePosition: [paddlePositionP1, paddlePositionP2] });
-          socket.emit("sync_paddle", {name: name, paddlePositionP1: paddlePositionP1, paddlePositionP2: paddlePositionP2, room: room});
 
         }
       }
@@ -177,7 +195,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           setBallPosition(newBallPosition);
         }
         if (mode !== "spectate") {
-          if (state % 100 === 0) {
+          if (state % 500 === 0) {
             socket.emit("sync_ball", {nextPosition: nextPosition, ballVelocity: ballVelocity, room: room});
           }
         }
@@ -217,18 +235,8 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     });
 
     socket.on("sync_paddle", (data) => {
-      if (mode === "spectate") {
-        if (data.player === "P1") {
           setPaddlePositionP1(data.paddlePositionP1); // 0
           setPaddlePositionP2(data.paddlePositionP2); // 1
-        }
-        else if (data.player === "P2") {
-          setPaddlePositionP2(data.paddlePositionP1); // 0
-          setPaddlePositionP1(data.paddlePositionP2); // 1
-        }
-      } else {
-        setPaddlePositionP2(data.paddlePositionP1);
-      }
     });
 
     socket.on("sync_score", (data) => {
