@@ -1,0 +1,47 @@
+.game-container {
+  display: flex;
+  justify-content: space-between;
+}
+  
+.player-status {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0px 250px;
+}
+  
+.status-box {
+  width: 80px;
+  height: 30px;
+  border: 1px solid #000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 15px;
+  margin-bottom: 15px;
+}
+  
+.status-box.joined {
+  background-color: green;
+  color: white;
+}
+  
+.status-box.not-joined {
+  background-color: red;
+  color: white;
+}
+  
+.status-box.ready {
+  background-color: green;
+  color: white;
+}
+  
+.status-box.not-ready {
+  background-color: red;
+  color: white;
+}
+  
+button {
+  width: 100px;
+  height: 40px
+}
