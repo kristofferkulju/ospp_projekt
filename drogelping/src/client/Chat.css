@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,400,700");
+.App {
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+  color: #212121;
+  font-family: "Open Sans", sans-serif;
+  display: grid;
+  place-items: center;
+}
+.chat-window {
+  width: 400px;
+  height: 300px; /* Locks height expansion of chat */
+  border: 1px solid #263238; /* Bounding Box */
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  background: #8fc6a6;
+  position: relative;
+  overflow: auto;
+}
+.chat-window .message {
+    display: flex;
+    align-items: flex-start;
+    padding: 5px;
+    position: relative;
+    background-color: transparent transparent;
+}
+.chat-window .message .sender { /* Box around Name */
+    min-width: 80px;
+    margin-right: 10px;
+    font-weight: bold;
+    background-color: #00ff37;
+    border-radius: 10px; /* Rounded corners */
+}
+.chat-window .message .text {
+    flex-grow: 1;
+    font-style: italic;
+    word-wrap: break-word;
+    text-align: left;
+    display: inline-block;
+    padding: 10px;
+    background-color: #eaeaea; /* Background color */
+    border-radius: 15px; /* Rounded corners */
+    position: relative;
+    max-width: 70%;
+}
+.chat-window .message .text::before {
+    content: '';
+    position: absolute;
+    border-style: solid;
+    border-width: 10px 15px 0;
+    border-color: #eaeaea transparent transparent;
+    left: -10px;
+}
+.chat-footer {
+    height: 40px;
+    display: flex;
+}
+.chat-footer .chat-input {
+    flex: 85%;
+    border: 0;
+    padding: 0 0.7em;
+    font-size: 1em;
+    font-family: "Open Sans", sans-serif;
+    outline: none;
+    color: #000000;
+    background-color: #ffffff;
+}
+.chat-footer .send { 
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    flex: 15%;
+    height: 100%;
+    background-color: #009d25;
+    color: #ffffff;
+    font-size: 1em;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.chat-footer .send:hover {
+    background-color: #218838; /* Darker green on hover */
+}

@@ -1,10 +1,10 @@
-import React from 'react';
-import { useState } from "react";
-import { useEffect } from "react";
+import React, { useRef, useEffect, useState } from 'react';
+import './Chat.css'
 
-function Chat({socket, username, room}) {
+function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused, focus}) {
     const [currentMessage, setCurrentMessage] = useState("");
-    const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "ASL"}]);
+    const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "Welcome to the chat. Remember to be respectful!"}]);
+    const chatBodyRef = useRef(null);
 
     const sendMessage = async () => {
         if (currentMessage !== "") {
@@ -13,9 +13,8 @@ function Chat({socket, username, room}) {
                 author: username,
                 message: currentMessage,
             };
-        
-        setMessageList((list) => [...list, messageData]);
-        await socket.emit("send_message", messageData);
+            setMessageList((list) => [...list, messageData]);
+            await socket.emit("send_message", messageData);
         }
         setCurrentMessage("");
     };
@@ -26,35 +25,53 @@ function Chat({socket, username, room}) {
         });
         return () => socket.off("receive_message");
     }, [socket]);
+    
+    const handleKeyDown = (event) => {
+      if (event.key === "Enter") {
+        sendMessage();
+      }
+    };
+
+    const handleFocus = () => {
+      setIsTextFieldFocused(true);
+    };
+
+    const handleUnfocus = () => {
+      setIsTextFieldFocused(false);
+    };
+
+    useEffect(() => {
+        if (chatBodyRef.current) {
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        }
+    }, [messageList]);
 
     return (
         <div>
-        <div className= "chat-header"> 
-            <p>Live Chat</p>
-        </div>
-        <div className="chat-window"> 
-            <div className= "chat-body"> 
-                {messageList.map((messageContent) => {
-                    return <p><b>{messageContent.author}</b> : {messageContent.message}</p>
-                })}
+            <div className="chat-window" ref={chatBodyRef}>
+                {messageList.map((messageContent, index) => (
+                    <div key={index} className="message">
+                        <div className="sender">{messageContent.author}</div>
+                        <div className="text">{messageContent.message}</div>
+                    </div>
+                ))}
             </div>
-        </div>
-        
-        <div className= "chat-footer ">
-            <input 
-            onKeyDown={(event) => { 
-                if (event.key === "Enter") { 
-                    sendMessage();
-                } 
-            }} 
-            type="text" 
-            placeholder ="Hey.." 
-            value={currentMessage}
-            onChange={(event) => {
-                setCurrentMessage(event.target.value);
-            }}/>
-            <button onClick = {sendMessage}> &#9658;</button>
-        </div>
+
+            <div className="chat-footer">
+                <input
+                    className="chat-input"
+                    onKeyDown={handleKeyDown}
+                    onFocus={handleFocus}
+                    onBlur={handleUnfocus}
+                    type="text"
+                    placeholder="Hey.."
+                    value={currentMessage}
+                    onChange={(event) => {
+                        setCurrentMessage(event.target.value);
+                    }} 
+                />
+                <button className="send" onClick={sendMessage}> &#9658;</button>
+            </div>
         </div>
     )
 }
