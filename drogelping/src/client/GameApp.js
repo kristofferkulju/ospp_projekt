@@ -86,11 +86,12 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
   const paddleWidth = 20;
   const paddleHeight = 100;
   
+  const startingVelocity = {x: 3, y: 3};
+  const velocitySum = startingVelocity.x + startingVelocity.y;
   const [paddlePositionP1, setPaddlePositionP1] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [paddlePositionP2, setPaddlePositionP2] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [ballPosition, setBallPosition] = useState({ top: fieldHeight / 2, left: fieldWidth / 2 - 10 });
-  const [ballVelocity, setBallVelocity] = useState({ x: 2, y: 2 });
-  
+  const [ballVelocity, setBallVelocity] = useState(startingVelocity);
   const [state, setState] = useState(0);
   
   
@@ -154,25 +155,37 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
 
         //TODO: Namnge konstanter något vettigt
         //Om bollen träffar taket eller golvet
-        if (nextPosition.top <= 0 || nextPosition.top + ballSize >= fieldHeight) {
+        if (nextPosition.top <= 0) {
+          const displacedPosition = { top: nextPosition.top - ballVelocity.y , left: nextPosition.left - ballVelocity.x };
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
+          setBallPosition(displacedPosition);
+          setBallVelocity(newBallVelocity);
+        }
+        else if (nextPosition.top + ballSize >= fieldHeight) {
+          const displacedPosition = { top: nextPosition.top - ballVelocity.y, left: nextPosition.left - ballVelocity.x };
+          const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
+          setBallPosition(displacedPosition);
           setBallVelocity(newBallVelocity);
         }
         
         //Om bollen träffar sidan av paddeln
-        if (nextPosition.left <= 15 + paddleWidth && nextPosition.top >= paddlePositionP1 && nextPosition.top <= paddlePositionP1 + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+        if (nextPosition.left <= 15 + paddleWidth && nextPosition.top + ballSize / 2 >= paddlePositionP1 && nextPosition.top <= paddlePositionP1 + paddleHeight) {
+          const velocityY = (-(paddlePositionP1 + (paddleHeight / 2) - nextPosition.top) * 6) / 100;
+          const newBallVelocity = { x: velocitySum - Math.abs(velocityY), y: velocityY };
           setBallVelocity(newBallVelocity);
         }
 
-        if (nextPosition.left + ballSize >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+        if (nextPosition.left + ballSize >= fieldWidth - 15 - paddleWidth && nextPosition.top + ballSize / 2 >= paddlePositionP2 && nextPosition.top <= paddlePositionP2 + paddleHeight) {
+          const velocityY = (-(paddlePositionP2 + (paddleHeight / 2) - nextPosition.top) * 6) / 100;
+          const newBallVelocity = { x: - ( velocitySum - Math.abs(velocityY) ), y: velocityY };
           setBallVelocity(newBallVelocity);
         }
         
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) {
+            const p2Velocity = {x :-velocitySum, y: 0};
             setScoreP2(scoreP2 + 1);
+            setBallVelocity(p2Velocity);
             console.log("Scored by player 2");
             socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
             if (!goalScoredRef.current && mode !== "spectate") {
@@ -183,7 +196,9 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           
           else if (nextPosition.left + ballSize >= fieldWidth) {
             if (playerStatus.leftPaddler === false) {
+              const p2Velocity = {x :-velocitySum, y: 0};
               setScoreP2(scoreP2 + 1);
+              setBallVelocity(p2Velocity);
               console.log("Scored by player 2");
               socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
               if (!goalScoredRef.current && mode !== "spectate") {
@@ -191,15 +206,17 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
                 goalScoredRef.current = true;
               }
             } else {
-            setScoreP1(scoreP1 + 1);
-            console.log("Scored by player 1");
-            socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
-            if (!goalScoredRef.current && mode !== "spectate") {
-              socket.emit("send_message", {author: "Server", room: room, message: name + " scored a goal!",});
-              goalScoredRef.current = true;
+              const p1Velocity = {x :velocitySum, y: 0};
+              setScoreP1(scoreP1 + 1);
+              setBallVelocity(p1Velocity);
+              console.log("Scored by player 1");
+              socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
+              if (!goalScoredRef.current && mode !== "spectate") {
+                socket.emit("send_message", {author: "Server", room: room, message: name + " scored a goal!",});
+                goalScoredRef.current = true;
+              }
             }
           }
-        }
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
