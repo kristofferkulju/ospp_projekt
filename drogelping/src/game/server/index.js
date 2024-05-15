@@ -125,6 +125,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("update_score", (data) => {
+        let player_score = data.name === players[0].name ? "P1" : "P2";
         socket.to(`${data.room}`).emit("sync_score", data);
         //console.log(`[UPDATE_SCORE](${socket.id}): (${data.scoreP1}-${data.scoreP2})`);
     });

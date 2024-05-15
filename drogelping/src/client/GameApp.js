@@ -182,6 +182,15 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           }
           
           else if (nextPosition.left + ballSize >= fieldWidth) {
+            if (playerStatus.leftPaddler === false) {
+              setScoreP2(scoreP2 + 1);
+              console.log("Scored by player 2");
+              socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
+              if (!goalScoredRef.current && mode !== "spectate") {
+                socket.emit("send_message", {author: "Server", room: room, message: " scored a goal!"});
+                goalScoredRef.current = true;
+              }
+            } else {
             setScoreP1(scoreP1 + 1);
             console.log("Scored by player 1");
             socket.emit("update_score", {scoreP1: scoreP1, scoreP2: scoreP2, room: room});
@@ -190,7 +199,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
               goalScoredRef.current = true;
             }
           }
-
+        }
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
@@ -235,13 +244,21 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     });
 
     socket.on("sync_paddle", (data) => {
+        if (data.player === "P1") {
           setPaddlePositionP1(data.paddlePositionP1); // 0
+        } else if (data.player === "P2") {
           setPaddlePositionP2(data.paddlePositionP2); // 1
+        }
     });
 
     socket.on("sync_score", (data) => {
+      if (playerStatus.leftPaddler === false) {
+        setScoreP1(data.scoreP2);
+        setScoreP2(data.scoreP1);
+      } else {
       setScoreP1(data.scoreP1);
       setScoreP2(data.scoreP2);
+      }
     })
 
     return () => {
