@@ -186,7 +186,6 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) {
             const p2Velocity = {x :-velocitySum, y: 0};
-            const p2Velocity = {x :-velocitySum, y: 0};
             setScoreP2(scoreP2 + 1);
             setBallVelocity(p2Velocity);
             console.log("Scored by player 2");
