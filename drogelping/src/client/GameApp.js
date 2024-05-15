@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import Ball from "../game/components/Ball";
 import Field from "../game/components/Field";
 import Paddle from "../game/components/Paddle"
@@ -165,6 +166,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           const displacedPosition = { top: nextPosition.top - ballVelocity.y, left: nextPosition.left - ballVelocity.x };
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
           setBallPosition(displacedPosition);
+          setBallPosition(displacedPosition);
           setBallVelocity(newBallVelocity);
         }
         
@@ -183,6 +185,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
         
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) {
+            const p2Velocity = {x :-velocitySum, y: 0};
             const p2Velocity = {x :-velocitySum, y: 0};
             setScoreP2(scoreP2 + 1);
             setBallVelocity(p2Velocity);
