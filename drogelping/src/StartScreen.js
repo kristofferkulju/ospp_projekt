@@ -125,25 +125,25 @@ const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick 
             <div className={`tab settings ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setShowSettings(true)} hidden>Lobby Settings</div>
         </div>
         {/*<div className={`content join ${activeTab === 'join' ? 'active' : ''}`}>*/}
-        <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '225px', overflow: 'auto' }}>
+        <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '200px', overflow: 'auto' }}>
             <div className="input-container">
                 <input type="text" placeholder="NAME" name="name" value={name} onChange={handleInputChange} className="name-input" maxLength={9}/>
                 <span className="separator">#</span>
                 <input type="text" placeholder="ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" maxLength={4}/>
             </div>
-            <button className="button cyan" onClick={spectateLobby}>Spectate</button>
+            {/*<button className="button cyan" onClick={spectateLobby}>Spectate</button>*/}
             <button className="button green" onClick={joinLobby}>Enter</button>
-            <button className="button red" onClick={demoGame}>DEMO</button> {/* TEMPORARY */}
+            {/*<button className="button red" onClick={demoGame}>DEMO</button>*/} {/* TEMPORARY */}
             {errorMessage && <p style={{ color : 'red' }}>{errorMessage}</p>}
         </div>
-        <div className="content create" style={{ display: activeTab === 'create' ? 'block' : 'none', height: '225px', overflow: 'auto' }}>
+        <div className="content create" style={{ display: activeTab === 'create' ? 'block' : 'none', height: '200px', overflow: 'auto' }}>
             <div className="input-container">
                 <input type="text" placeholder="NAME" name="name" value={name} onChange={handleInputChange} className="name-input" maxLength={9}/>
                 <span className="separator">#</span>
                 <input type="text" placeholder="ID" name="lobbyID" value={lobbyID} onChange={handleInputChange} className="lobbyID-input" maxLength={4}/>
             </div>
-            <button className="button purple" onClick={toggleSettingsPopup}>Lobby Settings</button>
             <button className="button green" onClick={createLobby}>Create</button>
+            <button className="button purple" onClick={toggleSettingsPopup}>Lobby Settings</button>
             {errorMessage && <p style={{ color : 'red' }}>{errorMessage}</p>}
         </div>
         {showSettings && (

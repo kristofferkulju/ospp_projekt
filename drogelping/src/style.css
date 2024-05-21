@@ -16,11 +16,11 @@ body {
     color: var(--text);
 } 
 .container {
-    zoom: 2;
+    zoom: 3;
     display: grid;
     max-width: auto;
     max-height: auto;
-    min-width: 25vw;
+    min-width: 15vw;
     overflow-y: auto;
     margin: 10px auto;
     padding: 20px;
