@@ -1,59 +1,49 @@
 .game-container {
-  width: 1000px;
-  height: 50px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items:flex-end;
 }
-
 .left {
-    margin: 0px 0%;
+    margin: 0px 2%;
 }
-
 .right {
-    margin: 0px 0%;
+    margin: 0px 2%;
 }
-
 .YouText {
     font-size: 25px;
     font-weight: bold;
-    color: #000000;
+    color: #ffffff;
 }
-
 .OpponentText {
     font-size: 25px;
-    color: #797979;
+    color: #5c5c5c;
 }
-
 .status-box {
   width: 150px;
   height: 30px;
-  border: 1px solid #000;
+  border-bottom: 1px solid #000;
   display: flex;
-  flex-direction: column; /* Text */
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
-  
 .status-box.joined {
-  background-color: green;
+  background-color: #5db35d;
   color: white;
 }
-  
 .status-box.not-joined {
-  background-color: red;
+  background-color: #b35d5d;
   color: white;
 }
-  
 .status-box.ready {
-  background-color: green;
+  background-color: #5db35d;
   color: white;
 }
-  
 .status-box.not-ready {
-  background-color: red;
+  background-color: #b35d5d;
   color: white;
 }
-  
 button {
   width: 100px;
   height: 40px

@@ -15,8 +15,8 @@ body {
     background-color: var(--background);
     color: var(--text);
 } 
-.container {
-    zoom: 3;
+.start_screen_container {
+    zoom: 2;
     display: grid;
     max-width: auto;
     max-height: auto;

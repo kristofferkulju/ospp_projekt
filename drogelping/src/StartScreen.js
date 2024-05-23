@@ -118,7 +118,7 @@ const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick 
   };
 
   return (
-    <div className="container">
+    <div className="start_screen_container">
         <div className="tabs">
             <div className={`tab join ${activeTab === 'join' ? 'active' : ''}`} onClick={() => toggleTab('join')}>Join Lobby</div>
             <div className={`tab create ${activeTab === 'create' ? 'active' : ''}`} onClick={() => toggleTab('create')}>Create Lobby</div>

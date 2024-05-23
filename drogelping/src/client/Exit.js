@@ -2,14 +2,13 @@ import React from 'react';
 
 function Exit({ navigateToLobby }) {
     const exitStyle = {
-        position: 'fixed',
-        zIndex: '999', // On top of other elements
-
-        top: '10px',
+        bottom: '10px',
         left: '10px',
         width: '150px',
         height: '100px',
-        
+        position: 'absolute',
+        zIndex: '999',
+
         backgroundImage: 'url(/drogelping.png)',
         backgroundSize: 'cover',
         cursor: 'pointer',

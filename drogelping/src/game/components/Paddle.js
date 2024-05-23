@@ -1,14 +1,14 @@
-function Paddle({width, left, top }) {
+function Paddle({ isLeftPaddle, width, height, top, isPlayer }) {
     return (
         <div
-        style = {{
-            width: `${width}px`,
-            height: '100px',
-            backgroundColor: 'white',
-            position: 'absolute',
-            left: `${left}px`,
-            top: `${top}px`,
-        }}
+            style={{
+                width: `${width}px`,
+                height: `${height}px`,
+                backgroundColor: isPlayer ? 'white' : '#bbbbbb',
+                position: 'absolute',
+                [isLeftPaddle ? 'left' : 'right']: isLeftPaddle ? '2%' : '2%',
+                top: `${top}px`,
+            }}
         />
     );
 }

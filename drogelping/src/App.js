@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import StartScreen from './StartScreen';
 import ClientApp from './client/ClientApp';
-import Exit from './client/Exit';
-import './App.css'
-//import Spectate from "..."
-//import Create from "..."
-//import Join from "..."
 
 var mode = ""
 
@@ -56,8 +51,7 @@ function App() {
         */}
         {currentPage === 'demo' && 
             <div>
-                <Exit navigateToLobby={navigateToLobby}/>
-                <ClientApp username={name} room={lobbyID} mode={mode} />
+                <ClientApp username={name} room={lobbyID} mode={mode} navigateToLobby={navigateToLobby} />
             </div>
         }
     </div>

@@ -10,20 +10,21 @@ import './GameApp.css';
 let lock = false;
 let gameActive = false;
 
-function GameApp({ room, isTextFieldFocused, name, mode}) {
-
+function GameApp({ room, isTextFieldFocused, name, mode }) {
   const [playerStatus, setPlayerStatus] = useState({
+    name: "none",
     hasJoined: false,
     isReady: false,
     side: "none"
   });
   const [opponentStatus, setOpponentStatus] = useState({
+    name: "none",
     hasJoined: false,
     isReady: false,
     side: "none"
   });
   const handleToggleJoinPlayer = () => {
-    setPlayerStatus({ ...playerStatus, hasJoined: !playerStatus.hasJoined });
+    setPlayerStatus({ ...playerStatus, hasJoined: !playerStatus.hasJoined, name: name });
   };
   const handleToggleReadyPlayer = () => {
     setPlayerStatus({ ...playerStatus, isReady: !playerStatus.isReady });
@@ -46,7 +47,6 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     countdown();
   }
 
-
   // Sends a confirmation to the server that a player has joined
   if (!playerStatus.hasJoined) {
     socket.emit("join_room", {room: room, name: name, mode: mode});
@@ -68,8 +68,7 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
   const moveUpOpponent = useKeyPress([upOpponent]);
   const moveDownOpponent = useKeyPress([downOpponent]);
 
-  // Gör så att man endast kan röra sin egen paddel med w och s efter att man angett vilken spelare man är
-  // TODO: Gör att detta har att göra med vilken spelare man är
+  // Spectators are not able to move any paddles
   useEffect(() => {
     if (mode === "spectate") {
       setUpPlayer("");
@@ -78,25 +77,19 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     
   }, [mode]);
   
-  
   const fieldWidth = 1000;
   const fieldHeight = 500;
   const paddleWidth = 20;
   const paddleHeight = 100;
-  
   const [paddlePositionLeft, setPaddlePositionLeft] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [paddlePositionRight, setPaddlePositionRight] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [paddlePositionPlayer, setPaddlePositionPlayer] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [paddlePositionOpponent, setPaddlePositionOpponent] = useState(fieldHeight / 2 - paddleHeight / 2);
   const [ballPosition, setBallPosition] = useState({ top: fieldHeight / 2, left: fieldWidth / 2 - 10 });
   const [ballVelocity, setBallVelocity] = useState({ x: 2, y: 2 });
-  
   const [state, setState] = useState(0);
   
-  
   useEffect(() => {
-
-
     setState(state + 1);
     goalScoredRef.current = false;
     
@@ -113,6 +106,9 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     const interval = setInterval(() => {
       const top = 0;
       const bottom = fieldHeight - paddleHeight;
+      if (!playerStatus.isReady || !opponentStatus.isReady){
+        gameActive = false;
+      }
       
       if (!isTextFieldFocused && playerStatus.isReady && gameActive) { // Prevent movement while in chat
         if (moveUpPlayer && !moveDownPlayer && paddlePositionPlayer > top) {
@@ -124,8 +120,6 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
             setPaddlePositionOpponent(newPos);
             socket.emit("right_paddle", {name: name, paddlePositionOpponent: paddlePositionOpponent, room: room});
           }
-          //socket.emit("update_position", {room : room, paddlePosition : [paddlePositionPlayer, paddlePositionOpponent]});
-          
         }
         else if (moveDownPlayer && !moveUpPlayer && paddlePositionPlayer < bottom) {
           const newPos = prevPos => Math.min(bottom, prevPos + 3);
@@ -136,8 +130,6 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
             setPaddlePositionOpponent(newPos);
             socket.emit("right_paddle", {name: name, paddlePositionOpponent: paddlePositionOpponent, room: room});
           }
-          //socket.emit("update_position", { room: room, paddlePosition: [paddlePositionPlayer, paddlePositionOpponent] });
-
         }
       }
 
@@ -151,16 +143,14 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           nextPosition.top += ballVelocity.y;
           nextPosition.left += ballVelocity.x;
         }
-        else {/* do nothing*/}
 
-        //TODO: Namnge konstanter något vettigt
-        //Om bollen träffar taket eller golvet
+        //Ball hits roof or floor
         if (nextPosition.top <= 0 || nextPosition.top + ballSize >= fieldHeight) {
           const newBallVelocity = { x: ballVelocity.x, y: -ballVelocity.y };
           setBallVelocity(newBallVelocity);
         }
         
-        //Om bollen träffar sidan av paddeln
+        //Ball hits side of paddle
         if (nextPosition.left <= 15 + paddleWidth && nextPosition.top >= paddlePositionPlayer && nextPosition.top <= paddlePositionPlayer + paddleHeight) {
           if (ballVelocity.x < 0) {
             const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
@@ -179,29 +169,27 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           if (nextPosition.left <= 0) { // Right player gains a point
             setScoreOpponent(scoreOpponent+1);
             if (playerStatus.side === "right" && !goalScoredRef.current) {
-              socket.emit("score", {scoring_player: name, room: room})
+              socket.emit("score", {scoring_player: name, room: room});
             }
             goalScoredRef.current = true
-          }
+        }
           
           else if (nextPosition.left + ballSize >= fieldWidth) { // Left player gains a point
             setScorePlayer(scorePlayer+1);
-            if (playerStatus.side == "left" && !goalScoredRef.current) {
-              socket.emit("score", {scoring_player: name, room: room})
+            if (playerStatus.side === "left" && !goalScoredRef.current) {
+              socket.emit("score", {scoring_player: name, room: room, scorePlayer: scorePlayer});
             }
             goalScoredRef.current = true
-          }
+        }
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
         if (mode !== "spectate") {
-          if (state % 500 === 0) {
+          if (state % 50 === 0) {
             socket.emit("sync_ball", {nextPosition: nextPosition, ballVelocity: ballVelocity, room: room});
           }
         }
-        
         return nextPosition;
-        
       });
       
     }, 10);
@@ -210,8 +198,13 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
   
   useEffect(() => {
     console.log("Use effect triggered.");
-    socket.on("both_joined", () => {
+    socket.on("both_joined", (data) => {
         opponentStatus.hasJoined = true;
+        if (name === data.players_0) {
+            opponentStatus.name = data.players_1;
+        } else if (name === data.players_1) {
+            opponentStatus.name = data.players_0;
+        }
     });
     socket.on("opponent_joined", (data) => {
         setOpponentStatus({ ...opponentStatus, isReady: data.ready });
@@ -222,17 +215,11 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
         setPlayerStatus({ ...playerStatus, side: playerSide });
         setOpponentStatus({ ...opponentStatus, side: opponentSide });
     });
-    socket.on("countdown", (data) => {
+    socket.on("countdown", () => {
+        gameActive = false;
         startCountdown(3, () => {
-            socket.emit("countdown_complete", {name: name, room: data.room});
             gameActive = true;
         });
-    });
-
-    socket.on("update_position", () => {
-      if (mode !== "spectate") {
-        //socket.to(`${data[3]}`).emit("sync_paddle", [data[1], data[2], () => ((data[0] === player1) ? "Player" : "Opponent")]);setPaddlePositionOpponent(data.paddlePosition[0]);
-      }
     });
 
     socket.on("sync_ball", (data) => { 
@@ -247,11 +234,6 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
     socket.on("right_paddle", (data) => {
       setPaddlePositionOpponent(data.paddlePositionOpponent);
     });
-     
-    socket.on("sync_score", (data) => {
-      setScorePlayer(data.scorePlayer);
-      setScoreOpponent(data.scoreOpponent);
-    })
 
     return () => {
         socket.off("both_joined");
@@ -267,29 +249,13 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
 
   return (
     <>
-      <h1>
-        {name}#{room} 
-      </h1>
-      <div id="message-container">
-        <div>
-            Your side: {playerStatus.side}
-        </div>
-        <div>
-            Opponent's side: {opponentStatus.side}
-        </div>
-
-        <div class="innerText">
-            <button onClick={handleToggleReadyPlayer}>{playerStatus.isReady ? 'Unready' : 'Ready'}</button>
-        </div>
-        <GameStatus playerStatus={playerStatus} opponentStatus={opponentStatus}/>
-      </div>
-
+      <GameStatus playerStatus={playerStatus} opponentStatus={opponentStatus} handleToggleReadyPlayer={handleToggleReadyPlayer}/>
       <div className="field">
-        <Field width={fieldWidth} height={fieldHeight} scorePlayer = {scorePlayer} scoreOpponent = {scoreOpponent}>
-          <Paddle width={paddleWidth} left={15} top={paddlePositionPlayer}></Paddle>
-          <Paddle width={paddleWidth} left={fieldWidth - 15 - paddleWidth} top={paddlePositionOpponent}></Paddle>
-          <Ball top={ballPosition.top} left={ballPosition.left} ballSize={ballSize}> </Ball>
-        </Field>
+      <Field width={fieldWidth} height={fieldHeight} scorePlayer={scorePlayer} scoreOpponent={scoreOpponent}>
+        <Paddle isLeftPaddle={true} width={paddleWidth} height={paddleHeight} top={paddlePositionPlayer} isPlayer={playerStatus.side === "left"}></Paddle>
+        <Paddle isLeftPaddle={false} width={paddleWidth} height={paddleHeight} top={paddlePositionOpponent} isPlayer={playerStatus.side === "right"}></Paddle>
+        <Ball top={ballPosition.top} left={ballPosition.left} ballSize={ballSize}> </Ball>
+      </Field>
       </div>
     </>
   );

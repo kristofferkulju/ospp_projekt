@@ -1,3 +1,62 @@
 .background {
-    background-color: #8fc6a6;
+  background-color: #8fc6a6;
 }
+.container {
+  zoom: 1;
+  height: 90vh;
+  width: 90vw;
+  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr 1fr 0.5fr;
+  grid-template-rows: 0.25fr 0.5fr 1fr 1fr 1fr 0.25fr;
+  grid-auto-columns: 1fr;
+  grid-auto-rows: 1fr;
+  gap: 1% 1%;
+  grid-auto-flow: row;
+  grid-template-areas:
+    ". . . . . . ."
+    "GameField GameField GameField GameField GameField ChatApp ChatApp"
+    "GameField GameField GameField GameField GameField ChatApp ChatApp"
+    "GameField GameField GameField GameField GameField ChatApp ChatApp"
+    "GameField GameField GameField GameField GameField ChatApp ChatApp"
+    "Exit . . . . . ThemeChange";
+}
+.Exit { grid-area: Exit; }
+.ThemeChange { grid-area: ThemeChange; }
+.GameField {  display: grid;
+  grid-template-columns: 0.5fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 0.5fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "GameApp GameApp GameApp GameApp GameApp"
+    "GameApp GameApp GameApp GameApp GameApp"
+    "GameApp GameApp GameApp GameApp GameApp"
+    "GameApp GameApp GameApp GameApp GameApp";
+  grid-area: GameField;
+}
+.GameApp { grid-area: GameApp; }
+.ChatApp {  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.5fr 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "RoomName"
+    "Chat"
+    "Chat"
+    "Chat";
+  grid-area: ChatApp;
+  position: relative;
+}
+.RoomName { 
+    grid-area: RoomName; 
+    text-align: center;
+    font-size: 2vw;
+    color: #ffffff;
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.Chat { grid-area: Chat; }
+  

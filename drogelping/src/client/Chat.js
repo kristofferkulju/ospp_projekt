@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './Chat.css'
 
-function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused, focus}) {
+function Chat({socket, username, room, setIsTextFieldFocused}) {
     const [currentMessage, setCurrentMessage] = useState("");
     const [messageList , setMessageList] = useState([{room: room, author: "Server", message: "Welcome to the chat. Remember to be respectful!"}]);
     const chatBodyRef = useRef(null);
@@ -47,11 +47,17 @@ function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused
     }, [messageList]);
 
     return (
-        <div>
+        <div className="chat-container">
             <div className="chat-window" ref={chatBodyRef}>
                 {messageList.map((messageContent, index) => (
-                    <div key={index} className="message">
-                        <div className="sender">{messageContent.author}</div>
+                    <div 
+                        key={index} 
+                        className={`message`}>
+                        <div className={`sender ${
+                            messageContent.author === username ? 'me-sender' 
+                            : messageContent.author === 'Server' ? 'server-sender' 
+                            : ''
+                        }`}>{messageContent.author}</div>
                         <div className="text">{messageContent.message}</div>
                     </div>
                 ))}
@@ -75,5 +81,4 @@ function Chat({socket, username, room, isTextFieldFocused, setIsTextFieldFocused
         </div>
     )
 }
-
 export default Chat;

@@ -1,24 +1,22 @@
 .App_game {
   text-align: center;
 }
-
 html, body {
+  text-align: center;
   margin: 0;
   padding: 0;
-  height: 100%;
   overflow: hidden;
   display: flex;
 }
-
-h1 {
-  text-align: center;
-}
-
 .field {
   position: relative;
-  width: 1000;
-  height: 500;
   display: flex;
-  justify-Content: center;
-  align-Items: center;
+  justify-content: center;
+}
+#message-container {
+    z-index: 999;
+    font-size: 60pt;
+    color: rgb(59, 133, 49);
+    margin-left: 48%;
+    margin-top: 15%;
 }
