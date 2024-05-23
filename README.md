@@ -22,6 +22,7 @@ In the project directory, you can run:
 - App is run in development mode.
 - Page will reload when changes are made.
 - Any lint errors present will be shown in the console.
+> Note: Client must be run at 100% zoom level (Ctrl+0)
 
 
 ### `npm run server`
