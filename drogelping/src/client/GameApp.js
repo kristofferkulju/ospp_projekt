@@ -119,22 +119,24 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
           const newPos = prevPos => Math.max(top, prevPos - 3);
           if (playerStatus.side === "left") {
             setPaddlePositionPlayer(newPos);
+            socket.emit("left_paddle", {name: name, paddlePositionPlayer: paddlePositionPlayer, room: room});
           } else if (playerStatus.side === "right") {
             setPaddlePositionOpponent(newPos);
+            socket.emit("right_paddle", {name: name, paddlePositionOpponent: paddlePositionOpponent, room: room});
           }
           //socket.emit("update_position", {room : room, paddlePosition : [paddlePositionPlayer, paddlePositionOpponent]});
-          socket.emit("sync_paddle", {name: name, paddlePositionPlayer: paddlePositionPlayer, paddlePositionOpponent: paddlePositionOpponent, room: room});
           
         }
         else if (moveDownPlayer && !moveUpPlayer && paddlePositionPlayer < bottom) {
           const newPos = prevPos => Math.min(bottom, prevPos + 3);
           if (playerStatus.side === "left") {
             setPaddlePositionPlayer(newPos);
+            socket.emit("left_paddle", {name: name, paddlePositionPlayer: paddlePositionPlayer, room: room});
           } else if (playerStatus.side === "right") {
             setPaddlePositionOpponent(newPos);
+            socket.emit("right_paddle", {name: name, paddlePositionOpponent: paddlePositionOpponent, room: room});
           }
           //socket.emit("update_position", { room: room, paddlePosition: [paddlePositionPlayer, paddlePositionOpponent] });
-          socket.emit("sync_paddle", {name: name, paddlePositionPlayer: paddlePositionPlayer, paddlePositionOpponent: paddlePositionOpponent, room: room});
 
         }
       }
@@ -160,51 +162,35 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
         
         //Om bollen träffar sidan av paddeln
         if (nextPosition.left <= 15 + paddleWidth && nextPosition.top >= paddlePositionPlayer && nextPosition.top <= paddlePositionPlayer + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
-          setBallVelocity(newBallVelocity);
+          if (ballVelocity.x < 0) {
+            const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+            setBallVelocity(newBallVelocity);
+          }
         }
 
         if (nextPosition.left + ballSize >= fieldWidth - 15 - paddleWidth && nextPosition.top >= paddlePositionOpponent && nextPosition.top <= paddlePositionOpponent + paddleHeight) {
-          const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
-          setBallVelocity(newBallVelocity);
+          if (ballVelocity.x > 0) {
+            const newBallVelocity = { x: -ballVelocity.x, y: ballVelocity.y };
+            setBallVelocity(newBallVelocity);
+          }
         }
         
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) { // Right player gains a point
             console.log("RIGHT GOAL!");
-            socket.emit("sync_score", {scorePlayer: scorePlayer, scoreOpponent: scoreOpponent, room: room});
-            if (playerStatus.side === "right") {
-                setScoreOpponent(scoreOpponent+1);
-            }
-            socket.emit("update_score", {scorePlayer: scorePlayer, scoreOpponent: scoreOpponent, room: room});
+            setScoreOpponent(scoreOpponent+1);
           }
           
           else if (nextPosition.left + ballSize >= fieldWidth) { // Left player gains a point
             console.log("LEFT GOAL!");
-            if (playerStatus.side === "left") {
-                setScorePlayer(scorePlayer);
-                socket.emit("update_score", {scorePlayer: scorePlayer+1, scoreOpponent: scoreOpponent, room: room});
-            }
-
-            //if (playerStatus.side === "left" && !goalScoredRef.current) {
-            //    setScorePlayer(scorePlayer+1);
-            //    goalScoredRef.current = true;
-            //    socket.emit("update_score", {scorePlayer: scorePlayer, scoreOpponent: scoreOpponent, room: room});
-            //} else if (opponentStatus.side === "left" && !goalScoredRef.current) {
-            //    setScoreOpponent(scoreOpponent+1);
-            //    goalScoredRef.current = true;
-            //}
-            //if (!goalScoredRef.current && mode !== "spectate") {
-            //  //socket.emit("send_message", {author: "Server", room: room, message: name + " scored a goal!",});
-            //  goalScoredRef.current = true;
-            //}
+            setScorePlayer(scorePlayer+1);
           }
 
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }
         if (mode !== "spectate") {
-          if (state % 100 === 0) {
+          if (state % 500 === 0) {
             socket.emit("sync_ball", {nextPosition: nextPosition, ballVelocity: ballVelocity, room: room});
           }
         }
@@ -249,24 +235,14 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
       setBallVelocity(data.ballVelocity);
     });
 
-    socket.on("sync_paddle", (data) => {
+    socket.on("left_paddle", (data) => {
       setPaddlePositionPlayer(data.paddlePositionPlayer);
-      setPaddlePositionOpponent(data.paddlePositionOpponent);
-      /*
-      if (mode === "spectate") {
-        if (data.player === "Player") {
-          setPaddlePositionPlayer(data.paddlePositionPlayer); // 0
-          setPaddlePositionOpponent(data.paddlePositionOpponent); // 1
-        }
-        else if (data.player === "Opponent") {
-          setPaddlePositionOpponent(data.paddlePositionPlayer); // 0
-          setPaddlePositionPlayer(data.paddlePositionOpponent); // 1
-        }
-      } else { 
-        setPaddlePositionOpponent(data.paddlePositionPlayer)
-      */
     });
-
+    
+    socket.on("right_paddle", (data) => {
+      setPaddlePositionOpponent(data.paddlePositionOpponent);
+    });
+     
     socket.on("sync_score", (data) => {
       setScorePlayer(data.scorePlayer);
       setScoreOpponent(data.scoreOpponent);

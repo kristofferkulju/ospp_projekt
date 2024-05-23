@@ -127,8 +127,14 @@ io.on("connection", (socket) => {
         //console.log(`[SYNC_BALL](${socket.id})`);
     });
 
-    socket.on("sync_paddle", (data) => {
-        socket.to(`${data.room}`).emit("sync_paddle", {paddlePositionPlayer: data.paddlePositionPlayer, paddlePositionOpponent: data.paddlePositionOpponent});
+    socket.on("left_paddle", (data) => {
+        socket.to(`${data.room}`).emit("left_paddle", {paddlePositionPlayer: data.paddlePositionPlayer});
+        let player = data.name === players[0].name ? "left" : "right";
+        console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
+    });
+
+    socket.on("right_paddle", (data) => {
+        socket.to(`${data.room}`).emit("right_paddle", {paddlePositionOpponent: data.paddlePositionOpponent});
         let player = data.name === players[0].name ? "left" : "right";
         console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
