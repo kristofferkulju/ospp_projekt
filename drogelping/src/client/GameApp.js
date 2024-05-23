@@ -177,15 +177,20 @@ function GameApp({ room, isTextFieldFocused, name, mode}) {
         
         if (nextPosition.left <= 0 || nextPosition.left + ballSize >= fieldWidth) {
           if (nextPosition.left <= 0) { // Right player gains a point
-            console.log("RIGHT GOAL!");
             setScoreOpponent(scoreOpponent+1);
+            if (playerStatus.side === "right" && !goalScoredRef.current) {
+              socket.emit("score", {scoring_player: name, room: room})
+            }
+            goalScoredRef.current = true
           }
           
           else if (nextPosition.left + ballSize >= fieldWidth) { // Left player gains a point
-            console.log("LEFT GOAL!");
             setScorePlayer(scorePlayer+1);
+            if (playerStatus.side == "left" && !goalScoredRef.current) {
+              socket.emit("score", {scoring_player: name, room: room})
+            }
+            goalScoredRef.current = true
           }
-
           const newBallPosition = { top: fieldHeight / 2, left: fieldWidth / 2 - (ballSize / 2) };
           setBallPosition(newBallPosition);
         }

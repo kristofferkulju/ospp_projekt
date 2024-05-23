@@ -130,13 +130,13 @@ io.on("connection", (socket) => {
     socket.on("left_paddle", (data) => {
         socket.to(`${data.room}`).emit("left_paddle", {paddlePositionPlayer: data.paddlePositionPlayer});
         let player = data.name === players[0].name ? "left" : "right";
-        console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
+        //console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
 
     socket.on("right_paddle", (data) => {
         socket.to(`${data.room}`).emit("right_paddle", {paddlePositionOpponent: data.paddlePositionOpponent});
         let player = data.name === players[0].name ? "left" : "right";
-        console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
+        //console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
 
     socket.on("update_score", (data) => {
@@ -144,6 +144,12 @@ io.on("connection", (socket) => {
         socket.to(`${data.room}`).emit("sync_score", data);
         console.log(`[UPDATE_SCORE](${socket.id}): (${data.scorePlayer}-${data.scoreOpponent})`);
     });
+
+    socket.on("score", (data) => {
+        console.log(`[SCORE_RECEIVED](${socket.id})`);
+        socket.to(`${data.room}`).emit("receive_message", {author: "Server", room: data.room, message: data.scoring_player + " scored a goal!"});
+        socket.emit("receive_message", {author: "Server", room: data.room, message: data.scoring_player + " scored a goal!"});
+    })
 });
 
 server.listen(2001, () => {
