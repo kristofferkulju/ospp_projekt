@@ -64,12 +64,12 @@ body {
     justify-content: center;
 }
 .input-container input[type="text"] {
-    cursor: text; /* Set text cursor */
-    border: 1px solid #ccc; /* Add a border */
-    padding: 10px; /* Add padding */
-    box-sizing: border-box; /* Include padding and border in width */
-    background-color: #c4f6ff; /* Set background color */
-    color: #000000; /* Set text color */
+    cursor: text;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #c4f6ff;
+    color: #000000;
 }
 .input-container input[type="text"]:focus {
     border-color: #007bff;
@@ -108,7 +108,7 @@ body {
     box-sizing: border-box;
 }
 .settings-popup-container input:focus {
-    border: 1px solid var(--active-tab); /* Bounding Box */
+    border: 1px solid var(--active-tab);
     outline: none;
 }
 .button {
@@ -154,10 +154,10 @@ input[type="number"]
 }
 .toggleLabel {
     display: inline-block;
-    width: 40px; /* Adjust width as needed */
-    height: 20px; /* Adjust height as needed */
-    background-color: var(--untoggled); /* Toggle background color */
-    border-radius: 20px; /* Rounded corners */
+    width: 40px;
+    height: 20px;
+    background-color: var(--untoggled);
+    border-radius: 20px;
     position: relative;
     cursor: pointer;
     margin-bottom: 10px;
@@ -172,13 +172,13 @@ input[type="number"]
     transition: 0.1s;
 }
 input[type="checkbox"] {
-    display: none; /* Hide the checkbox */
+    display: none;
 }
 input[type="checkbox"]:checked + .toggleLabel {
-    background-color: var(--toggled); /* Change background color when checked */
+    background-color: var(--toggled);
 }
 input[type="checkbox"]:checked + .toggleLabel:after {
-    transform: translateX(25px); /* Move toggle button to the right */
+    transform: translateX(25px);
 }
 .settingsText {
     font-size: 17px;
