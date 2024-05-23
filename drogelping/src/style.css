@@ -170,6 +170,7 @@ input[type="number"]
     border-radius: 50%;
     background-color: white;
     transition: 0.1s;
+    left: 0;
 }
 input[type="checkbox"] {
     display: none;

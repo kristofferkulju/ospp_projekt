@@ -177,7 +177,7 @@ function GameApp({ room, isTextFieldFocused, name, mode }) {
           else if (nextPosition.left + ballSize >= fieldWidth) { // Left player gains a point
             setScorePlayer(scorePlayer+1);
             if (playerStatus.side === "left" && !goalScoredRef.current) {
-              socket.emit("score", {scoring_player: name, room: room, scorePlayer: scorePlayer});
+              socket.emit("score", {scoring_player: name, room: room});
             }
             goalScoredRef.current = true
         }

@@ -104,6 +104,7 @@ const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick 
     };
     if (name && lobbyID) { // check if lobby exists too?
         onCreateClick(lobbyProperties);
+        setErrorMessage('Not yet implemented');
         //onJoinClick(name, lobbyID); // Join directly after creating room?
     }
     else {
@@ -124,7 +125,6 @@ const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick 
             <div className={`tab create ${activeTab === 'create' ? 'active' : ''}`} onClick={() => toggleTab('create')}>Create Lobby</div>
             <div className={`tab settings ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setShowSettings(true)} hidden>Lobby Settings</div>
         </div>
-        {/*<div className={`content join ${activeTab === 'join' ? 'active' : ''}`}>*/}
         <div className="content join" style={{ display: activeTab === 'join' ? 'block' : 'none', height: '200px', overflow: 'auto' }}>
             <div className="input-container">
                 <input type="text" placeholder="NAME" name="name" value={name} onChange={handleInputChange} className="name-input" maxLength={9}/>
@@ -160,7 +160,6 @@ const StartScreen = ({ onJoinClick, onCreateClick, onSpectateClick, onDemoClick 
                 />
             </div>
             <button className="button light-grey" onClick={() => toggleTab('create')}>Back</button>
-            {/* -------------------------------------- */}
         </div> 
         )}
     </div>
