@@ -185,7 +185,7 @@ function GameApp({ room, isTextFieldFocused, name, mode }) {
           setBallPosition(newBallPosition);
         }
         if (mode !== "spectate") {
-          if (state % 50 === 0) {
+          if (state % 500 === 0) {
             socket.emit("sync_ball", {nextPosition: nextPosition, ballVelocity: ballVelocity, room: room});
           }
         }
