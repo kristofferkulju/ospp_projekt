@@ -13,7 +13,7 @@ function App() {
     const joinLobby = (name, lobbyID) => {
         setName(name);
         setLobbyID(lobbyID);
-        setCurrentPage('demo');
+        setCurrentPage('game');
     }
     const createLobby = (lobbyProperties) => {
         setLobbyProperties(lobbyProperties);
@@ -23,13 +23,8 @@ function App() {
     const spectateLobby = (name, lobbyID) => {
         setName(name);
         setLobbyID(lobbyID);
-        setCurrentPage('demo');
         mode = "spectate";
-    }
-    const demoGame = () => { /* TEMPORARY */
-        setName("DEMO");
-        setLobbyID("000");
-        setCurrentPage('demo');
+        setCurrentPage('game');
     }
     const navigateToLobby = () => {
         setCurrentPage('start');
@@ -42,14 +37,8 @@ function App() {
                 onJoinClick={(name, lobbyID) => joinLobby(name, lobbyID)} 
                 onCreateClick={(lobbyProperties) => createLobby(lobbyProperties)} 
                 onSpectateClick={(name, lobbyID) => spectateLobby(name, lobbyID)} 
-                onDemoClick={demoGame} /* TEMPORARY */
             />}
-        {/* 
-        {currentPage === 'joinGame' && <Join name={name} lobbyID={lobbyID} />}
-        {currentPage === 'createLobby' && <Create lobbyProperties={lobbyProperties} />}
-        {currentPage === 'spectateGame' && <Spectate name={name} lobbyID={lobbyID} />}
-        */}
-        {currentPage === 'demo' && 
+        {currentPage === 'game' && 
             <div>
                 <ClientApp username={name} room={lobbyID} mode={mode} navigateToLobby={navigateToLobby} />
             </div>

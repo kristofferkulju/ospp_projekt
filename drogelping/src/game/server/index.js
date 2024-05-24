@@ -44,7 +44,6 @@ function send_receive(socket, data, message) {
 }
 
 function join_helper(socket, data) {
-
     let message = (data.mode === "spectate") ? `is now spectating room ${data.room}` : `has joined room ${data.room}`;
     let list = (data.mode === "spectate") ? spectators : players;
     if (!list.find(entry => entry.socketID === socket.id)) {
@@ -56,8 +55,6 @@ function join_helper(socket, data) {
             list.push({socketID: socket.id, name: data.name, ready: false});
             send_receive(socket, data, `${data.name} ${message}`); // Send in chat
         }
-    } else { 
-        //console.log(`${socket.id} is already in room ${data.room}`); 
     }
 }
 
@@ -71,11 +68,10 @@ io.on("connection", (socket) => {
     console.log(`[CONNECTED](${socket.id})`);
 
     socket.on("disconnect", () => {
-        console.log(`[DISCONNECTED](${socket.id})`)
+        console.log(`[DISCONNECTED](${socket.id})`);
     });
 
-    socket.on("join_room", (data) => { // TODO: Double "Joined" message (workaround atm)
-        
+    socket.on("join_room", (data) => {
         socket.join(`${data.room}`);
         join_helper(socket, data);
         if (players.length === MAXPLAYERS) {
@@ -89,12 +85,10 @@ io.on("connection", (socket) => {
         } else if (data.name === players[1].name) {
             socket.emit("set_side", {name: data.name, room: data.room, leftside: false});
         }
-        //console.log(`[JOIN_ROOM](${socket.id})`);
     });
 
     socket.on("confirm_ready", (data) => {
         ready(socket, data);
-        //console.log(`[CONFIRM_READY](${socket.id})`);
     });
 
     socket.on("ready_waiting", (data) => {
@@ -105,48 +99,33 @@ io.on("connection", (socket) => {
                 socket.to(`${data.room}`).emit("countdown", data);
             }
         }
-        //console.log(`[READY_WAITING](${socket.id})`);
-    });
-
-    socket.on("countdown_complete", (data) => {
-        //console.log(`[COUNTDOWN_COMPLETE](${socket.id}): ${data.name}(${data.room})`);
     });
 
     socket.on("send_message", (data) => {
         socket.to(`${data.room}`).emit("receive_message", data);
-        //console.log(`[SEND_MESSAGE](${socket.id}): ${data.author}(${data.room}) - "${data.message}"`);
     });
 
-    socket.on("update_position", (data) => { // SocketGame (paddle position)
+    socket.on("update_position", (data) => {
         socket.to(`${data.room}`).emit("update_position", data);
-        //console.log(`[UPDATE_POSITION](${socket.id}): *${data}*`);
     });
 
     socket.on("sync_ball", (data) => {
         socket.to(`${data.room}`).emit("sync_ball", data);
-        //console.log(`[SYNC_BALL](${socket.id})`);
     });
 
     socket.on("left_paddle", (data) => {
         socket.to(`${data.room}`).emit("left_paddle", {paddlePositionPlayer: data.paddlePositionPlayer});
-        let player = data.name === players[0].name ? "left" : "right";
-        //console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
 
     socket.on("right_paddle", (data) => {
         socket.to(`${data.room}`).emit("right_paddle", {paddlePositionOpponent: data.paddlePositionOpponent});
-        let player = data.name === players[0].name ? "left" : "right";
-        //console.log(`[SYNC_PADDLE](${socket.id}): ${data.name}(${player})`);
     });
 
     socket.on("update_score", (data) => {
-        let player_score = data.name === players[0].name ? "P1" : "P2";
         socket.to(`${data.room}`).emit("sync_score", data);
-        console.log(`[UPDATE_SCORE](${socket.id}): (${data.scorePlayer}-${data.scoreOpponent})`);
     });
 
     socket.on("score", (data) => {
-        console.log(`[SCORE_RECEIVED](${socket.id})`);
         socket.to(`${data.room}`).emit("receive_message", {author: "Server", room: data.room, message: data.scoring_player + " scored a goal!"});
         socket.emit("receive_message", {author: "Server", room: data.room, message: data.scoring_player + " scored a goal!"});
     })
