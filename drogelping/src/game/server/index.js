@@ -79,8 +79,8 @@ io.on("connection", (socket) => {
         socket.join(`${data.room}`);
         join_helper(socket, data);
         if (players.length === MAXPLAYERS) {
-            socket.to(`${data.room}`).emit("both_joined", {name: data.name, room: data.room}); // Updates for last player, Opponent "joined status".
-            socket.emit("both_joined", {name: data.name, room: data.room}); // Updates for last player, the Opponent "joined status".
+            socket.to(`${data.room}`).emit("both_joined", { name: data.name, room: data.room, players_0: players[0].name, players_1: players[1].name }); // Updates for last player, Opponent "joined status".
+            socket.emit("both_joined", { name: data.name, room: data.room, players_0: players[0].name, players_1: players[1].name }); // Updates for last player, the Opponent "joined status".
         }
         const isLeft = data.name === players[0].name ? true : (data.name === players[1].name ? false : "none");
         socket.emit("set_side", {name: data.name, room: data.room, leftside: isLeft});
